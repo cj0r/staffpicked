@@ -1,4 +1,11 @@
-# StaffPicked
+<h1 align="center"><img src="docs/logo/banner.webp" alt="StaffPicked" width="100%"></h1>
+
+<p align="center">
+  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/v/cj0r/staffpicked?sort=semver&style=flat-square&label=docker" alt="Docker image version"></a>
+  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/pulls/cj0r/staffpicked?style=flat-square" alt="Docker pulls"></a>
+  <a href="https://github.com/cj0r/staffpicked/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/cj0r/staffpicked/tests.yml?branch=main&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square" alt="License: GPL-3.0"></a>
+</p>
 
 Named for the shelf of staff picks at the old video store: a few carefully chosen lists, put together by people who care.
 
@@ -7,6 +14,9 @@ StaffPicked builds collections and playlists on Emby and Jellyfin from MDBList l
 Emby and Jellyfin are supported equally: every feature works on both, you pick the kind for each server in the setup screen (or with `SERVER_TYPE`), and one StaffPicked can keep an Emby server and a Jellyfin server in step at once.
 
 ![StaffPicked's shelf of collections, shown as tape covers](docs/screenshots/poster-view.webp)
+
+> [!WARNING]
+> StaffPicked is provided **as is, with no warranty, and you use it at your own risk**. It creates, changes and **deletes collections and playlists** on your media servers and replaces their artwork, and it holds the API keys for your servers and list services. Try a **dry run** first, and read [Security](#security) and the [Disclaimer](#disclaimer-use-at-your-own-risk) before you put it on a server you care about.
 
 ## Features
 
@@ -86,6 +96,10 @@ Optional settings in `docker-compose.yml`: `TZ` (your time zone, for the schedul
 **Compose managers** (Dockge, Portainer, a NAS's container app and the like): paste `docker-compose.yml` in as a new stack and deploy it. The config folder is then created next to the manager's copy of the compose file (Dockge: `/opt/stacks/<stack>/config`); that's the folder to edit or back up. If the manager itself runs in a container, its stacks folder must have the same path inside and outside it (e.g. `/opt/stacks:/opt/stacks`); otherwise Docker creates a separate, empty `config` folder on the host, and edits in the stacks folder never reach StaffPicked. `docker inspect staffpicked` shows which host folder is mounted at `/config`. To use a folder somewhere else, set `CONFIG_PATH` in the stack's `.env`, e.g. `CONFIG_PATH=/srv/staffpicked`. Plain `docker run` works too: pass the same port and volume.
 
 **Updating:** `docker compose pull && docker compose up -d` (or your manager's update button). Your config folder is kept, and new settings get their defaults.
+
+### Unraid
+
+StaffPicked has an Unraid template, [`templates/staffpicked.xml`](templates/staffpicked.xml). Once it's listed in Community Applications, search the **Apps** tab for StaffPicked and install it. The template keeps the config folder in `/mnt/user/appdata/staffpicked`, runs as `99:100` (`nobody:users`), and opens the web UI from the container's icon. Finish the setup in the browser as above.
 
 ### Building from source
 
@@ -190,6 +204,8 @@ Your own `staffpicked.env`, `collections.toml`, `playlists.toml`, `genres.toml` 
 Keys are only needed for the sources and images your configs use; `check` says which ones are missing.
 
 ## Security
+
+StaffPicked holds the API keys for your media servers and list services and can change what's on those servers, so treat it like the servers themselves. Set a password, don't forward its port to the internet, and reach it from outside your home only through a reverse proxy with HTTPS and two-factor sign-in, as described below.
 
 ### Sign-in
 
@@ -421,6 +437,28 @@ Carpenter first, then the rest of the decade.
 Only the IMDb ID is read: the first `tt` number on each line (find it in the film's imdb.com address, like `imdb.com/title/tt0084787/`). Lines without one, such as the title, a description and blank lines, are ignored. Keep the films as one flat list: Emby and Jellyfin playlists have no sections, so headings between films only make the file look like it has some. Shows work too. `check` warns about an ID listed twice and about a line that looks like a film but has no ID.
 
 To add a list, copy `list-template.md` into `playlists/` or `collections/` (or give an AI agent the prompt at its bottom), add a `[[playlist]]` or `[[collection]]` entry pointing at it, and run `check`. The web UI can do all of this for you: **New** starts an empty list or takes a whole list pasted in, AI-written ones included.
+
+## Disclaimer: use at your own risk
+
+**StaffPicked is provided "as is", without warranty of any kind, express or implied.** The [LICENSE](LICENSE) has the full legal text. In plain terms:
+
+- **You use it entirely at your own risk.** The author and contributors accept no responsibility or liability for lost or changed collections, playlists or artwork, wrong metadata, service interruptions, exposed API keys, security incidents, suspended accounts at the services it connects to, or any other damage from using or misusing it.
+- **It changes and deletes things on your media servers.** Syncs add and remove films in collections and playlists, a list's season ending deletes its collection or playlist, `remove` deletes everything configured, and artwork is replaced. A collection or playlist you made yourself is changed too if a StaffPicked entry has the same name. Your media files are never touched, but run a **dry run** first and keep backups of your server's data.
+- **Check your configuration before running it against a real server.** A wrong list, server or name can change far more than intended, and the author can't undo it for you.
+- **Your deployment's security is yours**: network exposure, the password and two-factor sign-in, HTTPS, the reverse proxy and who can read the config folder. See [Security](#security).
+- **You're responsible for following the terms of the services you connect it to** (MDBList, Trakt, TMDB, fanart.tv, MediUX and the rest) and of your own API keys, and for having the right to the artwork you use.
+- **StaffPicked isn't affiliated with or endorsed by** Emby, Jellyfin, or any of the services it works with. Their names belong to their owners.
+
+It's a hobby project maintained on a best-effort basis, with no guarantee of support or fixes. Report security problems privately, as [SECURITY.md](SECURITY.md) describes, rather than in a public issue.
+
+## Support the project
+
+If StaffPicked keeps your shelves stocked, you can support its development. Every bit is appreciated.
+
+<p>
+  <a href="https://ko-fi.com/cj000r"><img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
+  <a href="https://www.buymeacoffee.com/cj0r"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
+</p>
 
 ## Contributing and license
 

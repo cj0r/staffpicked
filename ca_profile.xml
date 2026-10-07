@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<CommunityApplications>
+  <Profile>StaffPicked builds collections and playlists on Emby and Jellyfin from MDBList, Trakt and your own lists, with seasonal windows, watched-aware playlists and artwork from TMDB, fanart.tv and MediUX. Settings are made in its web UI. Questions and bug reports go to the GitHub issues page.</Profile>
+  <Icon>https://raw.githubusercontent.com/cj0r/staffpicked/main/docs/logo/icon.png</Icon>
+  <WebPage>https://github.com/cj0r/staffpicked</WebPage>
+  <DonateLink>https://ko-fi.com/cj000r</DonateLink>
+  <DonateText>Support StaffPicked on Ko-fi</DonateText>
+</CommunityApplications>
