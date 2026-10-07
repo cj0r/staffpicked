@@ -1,5 +1,6 @@
 # Your real settings, lists and everything StaffPicked writes at run time live in config/.
 # Only the examples, the example lists and the list template are tracked.
+# Change test: 2026-10-07 | 11:42 AM
 config/*
 !config/*.example
 !config/list-template.md
