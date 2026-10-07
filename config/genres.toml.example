@@ -6,7 +6,7 @@
 # ============================================================================
 # KEY: every setting this file takes. Lines starting with # are ignored.
 # Text goes in "double quotes", and a list is ["one", "two"].
-# The README ("genres.toml") has more on each one.
+# More on each one in the user guide: https://github.com/cj0r/staffpicked/blob/main/docs/genres.md
 # ============================================================================
 #
 # [[genre]]   once per genre; name and at least one image

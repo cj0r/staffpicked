@@ -35,4 +35,4 @@ Run `docker compose up -d`, open `http://<host>:9343` and the setup screen walks
 
 ## More
 
-Full guide, settings reference and source: https://github.com/cj0r/staffpicked. License: GPL-3.0.
+User guide: https://github.com/cj0r/staffpicked/blob/main/docs/README.md. Source: https://github.com/cj0r/staffpicked. License: GPL-3.0.

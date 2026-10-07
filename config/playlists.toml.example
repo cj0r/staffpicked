@@ -6,7 +6,8 @@
 # ============================================================================
 # KEY: every setting this file takes. Lines starting with # are ignored.
 # Text goes in "double quotes", true/false doesn't, and a list is ["one", "two"].
-# The README ("playlists.toml") has more on each one.
+# More on each one in the user guide:
+# https://github.com/cj0r/staffpicked/blob/main/docs/collections-and-playlists.md
 # ============================================================================
 #
 # [settings]   once, at the top: the default for every playlist

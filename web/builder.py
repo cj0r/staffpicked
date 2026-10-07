@@ -17,7 +17,7 @@ import concurrent.futures, hashlib, importlib, json, os, re, tempfile, tomllib, 
 import backend
 
 KINDS = {"collections": "collection", "playlists": "playlist", "genres": "genre"}
-# The settings the forms edit, in the order they are written. See the README for each one.
+# The settings the forms edit, in the order they are written. See docs/settings.md for each one.
 FIELDS = {
     "collection": ("name", "sources", "active", "poster", "backdrops", "description", "sort_name", "display_order",
                    "servers"),

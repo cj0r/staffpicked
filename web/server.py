@@ -12,7 +12,10 @@ import collections, concurrent.futures, datetime, hashlib, hmac, http.server, js
 import secrets, signal, socketserver, subprocess, sys, threading, time, urllib.parse, urllib.request
 
 import backend, builder, notify, security
-from scripts import __version__ as VERSION    # backend puts the app folder on the path
+from scripts import __version__    # backend puts the app folder on the path
+
+# a test image built from staffpicked-dev says which commit it came from: "1.0.0-dev+a1b2c3d"
+VERSION = __version__ + (f"-dev+{os.environ['STAFFPICKED_BUILD']}" if os.environ.get("STAFFPICKED_BUILD") else "")
 
 PORT = int(os.environ.get("PORT", "9343"))
 PUBLIC_DIR = os.path.join(backend.HERE, "public")
@@ -1726,7 +1729,7 @@ def main():
     except PermissionError as e:
         sys.exit(f"ERROR: StaffPicked can't write to {backend.CONFIG_DIR} ({e.strerror}: {e.filename}).\n"
                  f"It runs as user {os.getuid()}, group {os.getgid()}. In Docker, set PUID and PGID to the "
-                 "owner of your config folder (see \"Permissions\" in the README), or make the folder "
+                 "owner of your config folder (see \"Permissions\" in the user guide), or make the folder "
                  "writable for that user.")
     time_zone()
     threading.Thread(target=scheduler, daemon=True).start()

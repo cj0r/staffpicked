@@ -12,7 +12,7 @@ services:
     environment:
       - TZ=Etc/UTC               # your time zone (e.g. America/Chicago), used for the sync schedule; Settings > Time zone overrides it
       # optional: StaffPicked runs as whoever owns the config folder. To pick the user
-      # and group yourself, set both (see "Permissions" in the README):
+      # and group yourself, set both (see "Permissions" in the user guide):
       # - PUID=1000
       # - PGID=1000
     volumes:

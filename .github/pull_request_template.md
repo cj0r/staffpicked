@@ -9,5 +9,5 @@
 ## Checklist
 
 - [ ] `python -m unittest discover -s tests -t .` passes
-- [ ] New settings are in the matching `config/*.example` KEY block and the README
+- [ ] New settings are in the matching `config/*.example` KEY block and the user guide (`docs/`)
 - [ ] `CHANGELOG.md` has a line for this change
