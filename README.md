@@ -81,6 +81,10 @@ Everything else is in the [user guide](docs/README.md):
 
 It's a hobby project maintained on a best-effort basis, with no guarantee of support or fixes. Report security problems privately, as [SECURITY.md](SECURITY.md) describes, rather than in a public issue.
 
+## AI-assisted development
+
+StaffPicked is developed with the help of AI coding tools. AI-generated code, tests and documentation are reviewed and tested by the maintainer before they're merged, and the maintainer is responsible for everything in a release. Even so, AI-assisted code can contain mistakes that review and testing miss, which is one more reason to follow the disclaimer above: try a dry run first and keep backups of your server's data. If you find a bug, please [open an issue](https://github.com/cj0r/staffpicked/issues).
+
 ## Support the project
 
 If StaffPicked keeps your shelves stocked, you can support its development. Every bit is appreciated.

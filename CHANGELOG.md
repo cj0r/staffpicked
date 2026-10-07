@@ -2,6 +2,10 @@
 
 Every release of StaffPicked, newest first. Versions follow [semantic versioning](https://semver.org): a new major version means a config or setting has to change by hand.
 
+## 1.1.2 (2026-10-07)
+
+- The README says StaffPicked is developed with the help of AI coding tools.
+
 ## 1.1.1 (2026-10-07)
 
 - The README is now a short introduction and quick start, and everything else moved to a multi-page user guide in `docs/`.
