@@ -1,0 +1,62 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: "[bug]"
+labels: bug
+assignees: ''
+type: Bug
+
+---
+
+name: Bug report
+description: Something in StaffPicked isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Security problems go through the Security tab's "Report a vulnerability", not here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what StaffPicked did instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: StaffPicked version
+      description: Shown next to the logo in the web UI.
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: server
+    attributes:
+      label: Media server
+      options: [Emby, Jellyfin, Both]
+    validations:
+      required: true
+  - type: input
+    id: server-version
+    attributes:
+      label: Media server version
+      placeholder: "4.9.1 / 10.11.0"
+  - type: input
+    id: host
+    attributes:
+      label: Where it runs
+      description: The host and how you start the container.
+      placeholder: Docker Compose on Ubuntu, Unraid, Synology, Docker Desktop...
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log
+      description: The log of the run that went wrong (Logs in the web UI). Check that no API keys are in it.
+      render: text
+  - type: textarea
+    id: config
+    attributes:
+      label: Config entry
+      description: The collection, playlist or genre entry involved, if any. Leave out keys and private list links.
+      render: toml
