@@ -55,6 +55,12 @@ def save_web_settings(s):
     write_json(WEB_FILE, s, private=True)
 
 
+def effects_on():
+    """Screen effects (tape grain, the tracking band, scanlines): on unless turned off in Settings.
+    Kept in web.json, so the choice holds for every browser and through restarts."""
+    return web_settings().get("effects", True) is not False
+
+
 # ---------------------------------------------------------------- env file
 
 ENV_LINE = re.compile(r"^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=(.*)$")
@@ -907,7 +913,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if ctype.startswith("text/") or ctype in ("application/javascript", "application/json"):
             ctype += "; charset=utf-8"
         with open(full, "rb") as f:
-            self.send(200, f.read(), ctype)
+            data = f.read()
+        if path in ("/index.html", "/login.html") and not effects_on():
+            # marked before the page draws, so the effects never flash on first
+            data = data.replace(b'<html lang="en">', b'<html lang="en" class="no-effects">', 1)
+        self.send(200, data, ctype)
 
     def api(self, method, path, qs):
         parts = path.strip("/").split("/")[1:]
@@ -1005,6 +1015,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if key == ("POST", "setup") and len(parts) <= 2:
             return self.first_run(parts[1] if len(parts) == 2 else "finish", self.body())
 
+        if key == ("POST", "effects") and len(parts) == 1:
+            on = self.body().get("effects")
+            if not isinstance(on, bool):
+                raise Error(400, "effects is true or false")
+            with LOCK:
+                s = web_settings()
+                s["effects"] = on
+                save_web_settings(s)
+            HUB.publish("effects", {"effects": on})   # other open tabs follow along
+            return self.send(200, {"ok": True, "effects": on})
         if key == ("GET", "settings"):
             return self.send(200, self.settings())
         if key == ("PUT", "settings"):
@@ -1115,7 +1135,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "servers": [{"id": x["id"], "name": x["name"], "type": x["type"]} for x in server_list(env)],
                 "next_run": next_run(), "schedule": schedule_text(), "time_zone": tz,
                 "requests": backend.requests_module().setup(env), "today": today.isoformat(),
-                "setup": {"needed": needs_setup(env), "skipped": bool(web_settings().get("setup_skipped"))}}
+                "setup": {"needed": needs_setup(env), "skipped": bool(web_settings().get("setup_skipped"))},
+                "effects": effects_on()}
 
     def events(self):
         q = HUB.subscribe()

@@ -55,13 +55,16 @@ class WebFirstRun(unittest.TestCase):
         self.base = config_dir("http://YOUR_SERVER:8096", **{
             "collections.toml": '[[collection]]\nname = "80s Horror"\nsources = ["collections/80s.md"]\n',
             "playlists.toml": "", "genres.toml": "", "collections__80s.md": "- tt0084787 | The Thing (1982)\n"})
-        self.port = free_port()
         self.cookie = ""
+        self.addCleanup(self.stop)
+        self.start()
+
+    def start(self):
+        self.port = free_port()
         self.proc = subprocess.Popen([sys.executable, os.path.join(ROOT, "web", "server.py")], cwd=ROOT,
                                      env=clean_env(STAFFPICKED_CONFIG=self.base, PORT=str(self.port), TZ="UTC",
                                                    STAFFPICKED_DEFAULTS=os.path.join(ROOT, "config")),
                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        self.addCleanup(self.stop)
         for _ in range(100):
             try:
                 self.call("GET", "/api/health")
@@ -122,6 +125,24 @@ class WebFirstRun(unittest.TestCase):
     def test_skip(self):
         self.call("POST", "/api/setup/skip", {})
         self.assertEqual(self.call("GET", "/api/status")["setup"], {"needed": True, "skipped": True})
+
+    def test_screen_effects_setting(self):
+        def page(path):
+            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}{path}", timeout=20) as r:
+                return r.read().decode()
+        self.assertTrue(self.call("GET", "/api/status")["effects"])      # on until turned off
+        self.assertNotIn("no-effects", page("/"))
+        with self.assertRaises(urllib.error.HTTPError) as e:
+            self.call("POST", "/api/effects", {"effects": "off"})
+        self.assertEqual(e.exception.code, 400)
+        self.assertEqual(self.call("POST", "/api/effects", {"effects": False}), {"ok": True, "effects": False})
+        self.assertFalse(self.call("GET", "/api/status")["effects"])
+        self.assertIn('<html lang="en" class="no-effects">', page("/"))
+        self.stop()                                                     # it holds through a restart
+        self.start()
+        self.assertIn('<html lang="en" class="no-effects">', page("/index.html"))
+        self.call("POST", "/api/effects", {"effects": True})
+        self.assertNotIn("no-effects", page("/"))
 
     def test_download_and_restore_the_config(self):
         write(self.base, "web/logs/collections.log", "a log\n")

@@ -1,5 +1,7 @@
 name: Release
 
+# Runs only in the public repo (cj0r/staffpicked). In staffpicked-dev, a version tag starts
+# publish.yml instead, which copies the tree over and tags it there, and that tag starts this.
 on:
   push:
     tags: ["v*.*.*"]
@@ -13,6 +15,7 @@ env:
 
 jobs:
   test:
+    if: github.repository == 'cj0r/staffpicked'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
