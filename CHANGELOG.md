@@ -2,6 +2,10 @@
 
 Every release of StaffPicked, newest first. Versions follow [semantic versioning](https://semver.org): a new major version means a config or setting has to change by hand.
 
+## 1.1.1 (2026-10-07)
+
+- The README is now a short introduction and quick start, and everything else moved to a multi-page user guide in `docs/`.
+
 ## 1.1.0 (2026-10-07)
 
 - A Screen Effects switch in Settings turns off the worn-tape effects (the tracking band that rolls down the screen, tape grain, scanlines, the tube vignette and the blinking PLAY). Enabled by default; the choice is saved on the server, so it holds for every browser, sign-in and restart.

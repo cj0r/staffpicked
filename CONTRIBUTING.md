@@ -24,13 +24,13 @@ Run the tests from the repo root before opening a pull request:
 python -m unittest discover -s tests -t .
 ```
 
-The tests sync against a small fake Emby server (`tests/fake_emby.py`), so they need no real server or API keys.
+They cover season windows, list files, the web UI's entry editor, the config files' KEY blocks, retries, backups, and whole syncs against a small fake Emby server (`tests/fake_emby.py`), from the command line and from the web UI, so they need no real server or API keys.
 
 ## Pull requests
 
 - Keep each pull request to one change, with a test for new behavior or a fixed bug.
 - Write settings, messages and docs in plain words for someone who isn't a developer.
-- When a setting is added or changed, update the KEY block at the top of the matching `config/*.example` file and the README.
+- When a setting is added or changed, update the KEY block at the top of the matching `config/*.example` file and the user guide in `docs/`.
 - Add a line to `CHANGELOG.md` under the next version.
 
 By contributing you agree your work is released under the project's license, GPL-3.0.

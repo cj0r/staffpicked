@@ -6,6 +6,8 @@ FROM python:3.14-alpine3.24
 # the release build passes the tag's version (it must match scripts/__init__.py) and commit
 ARG VERSION=dev
 ARG REVISION=
+# set only for test images built from staffpicked-dev: the commit, shown after the version in the UI
+ARG BUILD=
 LABEL org.opencontainers.image.title="StaffPicked" \
       org.opencontainers.image.description="Emby and Jellyfin collections and playlists from MDBList, Trakt and your own lists" \
       org.opencontainers.image.licenses="GPL-3.0-only" \
@@ -29,7 +31,8 @@ ENV PYTHONUNBUFFERED=1 \
     STAFFPICKED_CONFIG=/config \
     STAFFPICKED_DEFAULTS=/app/defaults \
     TZ=UTC \
-    PORT=9343
+    PORT=9343 \
+    STAFFPICKED_BUILD=${BUILD}
 VOLUME /config
 EXPOSE 9343
 # healthy while the web UI answers and its daily scheduler is running (Dockge, Portainer and

@@ -12,7 +12,7 @@ Only the latest release gets security fixes. Update by pulling the newest image 
 
 ## What StaffPicked protects
 
-- The web UI holds your media server and API keys, so it asks for a password, and without one it only opens for browsers on your local network that connect to it directly. See the README's [Security](README.md#security) section for sign-in, two-factor codes and reverse proxy setup.
+- The web UI holds your media server and API keys, so it asks for a password, and without one it only opens for browsers on your local network that connect to it directly. See [Security](docs/security.md) in the user guide for sign-in, two-factor codes and reverse proxy setup.
 - Passwords, sign-ins and recovery codes are stored only as hashes. API keys are stored as you enter them in `staffpicked.env`, so keep the config folder private.
 - StaffPicked runs as an unprivileged user in the container and needs no extra capabilities.
 
