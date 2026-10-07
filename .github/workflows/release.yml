@@ -54,7 +54,7 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
       - name: Build the amd64 image to test
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           load: true
@@ -67,7 +67,7 @@ jobs:
           for i in $(seq 30); do curl -fs http://127.0.0.1:9343/api/health && exit 0; sleep 2; done
           docker logs sp; exit 1
       - name: Build amd64 + arm64 and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
