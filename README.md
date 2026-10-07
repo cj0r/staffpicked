@@ -99,7 +99,7 @@ Optional settings in `docker-compose.yml`: `TZ` (your time zone, for the schedul
 
 ### Unraid
 
-StaffPicked has an Unraid template, [`templates/staffpicked.xml`](templates/staffpicked.xml). Once it's listed in Community Applications, search the **Apps** tab for StaffPicked and install it. The template keeps the config folder in `/mnt/user/appdata/staffpicked`, runs as `99:100` (`nobody:users`), and opens the web UI from the container's icon. Finish the setup in the browser as above.
+Once it's listed in Community Applications, install it from the **Apps** tab: search for StaffPicked. The template, kept in [cj0r/unraid-templates](https://github.com/cj0r/unraid-templates), keeps the config folder in `/mnt/user/appdata/staffpicked`, runs as `99:100` (`nobody:users`), and opens the web UI from the container's icon. Finish the setup in the browser as above.
 
 ### Building from source
 
