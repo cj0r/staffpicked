@@ -1,0 +1,44 @@
+# Genres: your own artwork on the genres already on the server, one [[genre]] per genre.
+# StaffPicked never creates, renames or deletes a genre; it only sets the images below.
+# Paths are relative to this folder. Copy this file to genres.toml and make it your own
+# (StaffPicked and the web UI create genres.toml from it on first run if it's missing).
+#
+# ============================================================================
+# KEY: every setting this file takes. Lines starting with # are ignored.
+# Text goes in "double quotes", and a list is ["one", "two"].
+# The README ("genres.toml") has more on each one.
+# ============================================================================
+#
+# [[genre]]   once per genre; name and at least one image
+#   name = "Horror"                    text: the genre's name on the server, as a film's
+#                                      genres show it (capitalization doesn't matter)
+#   poster = "images/horror.jpg"       optional image: the genre's main (Primary) image,
+#                                      the card Jellyfin and Emby show for the genre
+#   thumb = "images/horror-wide.jpg"   optional image: a wide 16:9 card (Thumb), which Emby
+#                                      shows in its genre rows when set
+#   backdrops = ["...", "..."]         optional list of one or more images behind the
+#                                      genre's page (formats below)
+#   servers = ["Jellyfin"]             optional list: only these media servers (their names in
+#                                      Settings / SERVER_NAME). Leave out = every server.
+#
+# Images, for poster, thumb and backdrops:
+#   "images/<file>.jpg"                a file in this folder (.jpg, .jpeg, .png or .webp)
+#   "https://..."                      any image URL
+#   "tmdb:movie/<id>"  "tmdb:tv/<id>"  "tmdb:collection/<id>"   TMDB's best image (TMDB_API_TOKEN)
+#   "tmdb:/<file>.jpg"                 one exact TMDB image (TMDB_API_TOKEN)
+#   "fanart:movie/<TMDB or IMDb id>"  "fanart:tv/<TVDB id>"     fanart.tv (FANARTTV_API_KEY)
+#   "mediux:movie/<TMDB id>"  "mediux:collection/<TMDB id>"  "mediux:set/<set id>"   MediUX (MEDIUX_API_TOKEN)
+#   "mediux:<asset id>"                one exact MediUX image
+#   A ThePosterDB poster is added by hand: download it from theposterdb.com, then use "images/<file>.jpg"
+#
+# Removing a genre here leaves its artwork on the server; the web UI's Delete (or
+# "python -m scripts remove") can take StaffPicked's artwork off it first.
+#
+# Example, with every setting:
+#   [[genre]]
+#   name = "Horror"
+#   poster = "images/horror-poster.jpg"
+#   thumb = "images/horror-thumb.jpg"
+#   backdrops = ["images/horror-backdrop.jpg", "tmdb:/abc123.jpg"]
+#   servers = ["Jellyfin"]
+# ============================================================================

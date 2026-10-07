@@ -1,0 +1,69 @@
+# Playlists: one [[playlist]] per playlist, played in the order of its lists.
+# Paths are relative to this folder. User names stay in staffpicked.env, not here.
+# Copy this file to playlists.toml and make it your own (StaffPicked and the web UI
+# create playlists.toml from it on first run if it's missing).
+#
+# ============================================================================
+# KEY: every setting this file takes. Lines starting with # are ignored.
+# Text goes in "double quotes", true/false doesn't, and a list is ["one", "two"].
+# The README ("playlists.toml") has more on each one.
+# ============================================================================
+#
+# [settings]   once, at the top: the default for every playlist
+#   include_watched = false            true/false. false = a film drops off once anyone
+#                                      in WATCHED_BY (staffpicked.env) has played it.
+#   share = "view"                     "view" = every other user can see and play it;
+#                                      "private" = only the owner (SERVER_USER) sees it.
+#
+# [[playlist]]   once per playlist; only name and sources are required
+#   name = "80s Horror"                text: the playlist's name on the server
+#   sources = ["..."]                  list: where its films come from, played in this
+#                                      order, one list after another. Any of:
+#       "playlists/<file>.md"          your own list file, top to bottom (see list-template.md)
+#       "https://mdblist.com/lists/<user>/<list>"  "mdblist:<user>/<list>"  "mdblist:<list id>"
+#       "https://trakt.tv/users/<user>/lists/<list>"  "trakt:<user>/<list>"
+#       "trakt:<user>/watchlist"       (needs TRAKT_ACCESS_TOKEN)
+#   active = "09-25 to 10-31"          optional season window. "MM-DD to MM-DD" repeats
+#                                      every year and may wrap the new year ("11-30 to 01-01");
+#                                      "2026-09-25 to 2026-10-31" happens once. Outside it the
+#                                      playlist is taken off the server. Leave out = all year.
+#   poster = "images/my-poster.jpg"    optional image (formats below)
+#   backdrops = ["...", "..."]         optional list of one or more images (formats below)
+#   include_watched = true             optional: overrides [settings] for this playlist
+#   share = "private"                  optional: overrides [settings] for this playlist
+#   watched_by = ["name", "name"]      optional list of user names or IDs: overrides
+#                                      WATCHED_BY for this playlist (better kept in
+#                                      staffpicked.env so names stay out of this file)
+#   servers = ["Emby"]                 optional list: only these media servers (their names in
+#                                      Settings / SERVER_NAME). Leave out = every server.
+#
+# Images, for poster and backdrops:
+#   "images/<file>.jpg"                a file in this folder (.jpg, .jpeg, .png or .webp)
+#   "https://..."                      any image URL
+#   "tmdb:movie/<id>"  "tmdb:tv/<id>"  "tmdb:collection/<id>"   TMDB's best image (TMDB_API_TOKEN)
+#   "tmdb:/<file>.jpg"                 one exact TMDB image (TMDB_API_TOKEN)
+#   "fanart:movie/<TMDB or IMDb id>"  "fanart:tv/<TVDB id>"     fanart.tv (FANARTTV_API_KEY)
+#   "mediux:movie/<TMDB id>"  "mediux:collection/<TMDB id>"  "mediux:set/<set id>"   MediUX (MEDIUX_API_TOKEN)
+#   "mediux:<asset id>"                one exact MediUX image
+#   A ThePosterDB poster is added by hand: download it from theposterdb.com, then use "images/<file>.jpg"
+#
+# Example, with every setting:
+#   [[playlist]]
+#   name = "80s Horror"
+#   sources = ["playlists/80s-horror.md"]
+#   active = "09-25 to 10-31"
+#   poster = "images/80s-horror-poster.jpg"
+#   backdrops = ["images/80s-horror-backdrop.jpg"]
+#   include_watched = false
+#   share = "view"
+#   servers = ["Emby"]
+# ============================================================================
+
+[settings]
+include_watched = false     # false = drop what the watched-by users have already played
+share = "view"              # view = everyone else can see it; private = owner only
+
+[[playlist]]
+name = "Example Watchlist"
+sources = ["playlists/example-list.md"]
+active = "09-25 to 10-31"   # optional season window; leave it out for all year

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - StaffPicked</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="vendor/fonts/fonts.css">
+  <script src="vendor/lucide.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body {
+      background-color: #0b0f19 !important;
+      background-image: linear-gradient(135deg, #070a13 0%, #0d1326 50%, #151e38 100%) !important;
+      color: #f3f4f6 !important;
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: #111827 !important; /* solid dark fallback */
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 1rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .login-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .login-logo {
+      width: 4rem;
+      height: 4rem;
+    }
+    .login-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .login-header p {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin: 0;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-group label i {
+      width: 1rem;
+      height: 1rem;
+      color: #9ca3af;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .input-wrapper i, .input-wrapper svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.15rem;
+      height: 1.15rem;
+      color: #9ca3af;
+      pointer-events: none;
+    }
+    .input-wrapper input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      background: #1f2937 !important; /* solid dark input background */
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.5rem;
+      color: #ffffff !important;
+      font-family: inherit;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: #6366f1;
+      background: #374151 !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+    .btn-login {
+      width: 100%;
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    #code-group[hidden] { display: none; }
+    .login-hint {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .error-alert {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #f87171;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .error-alert i {
+      flex-shrink: 0;
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+    
+    /* Autofill styling override to prevent white background/black text browser default behavior */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #1f2937 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="favicon.svg" alt="" class="login-logo">
+        <h2 class="brand-title" aria-label="StaffPicked"><span class="brand-chrome">Staff</span><span class="brand-script">Picked</span></h2>
+        <p>Sign in to stock the shelves</p>
+      </div>
+
+      <div class="error-alert" id="error-box">
+        <i data-lucide="alert-circle"></i>
+        <span id="error-text"></span>
+      </div>
+
+      <form id="login-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock"></i>
+            <input type="password" id="password" required autofocus autocomplete="current-password" placeholder="Enter password">
+          </div>
+        </div>
+
+        <div class="form-group" id="code-group" hidden>
+          <label for="code">Authenticator code</label>
+          <div class="input-wrapper">
+            <i data-lucide="smartphone"></i>
+            <input type="text" id="code" autocomplete="one-time-code" inputmode="numeric" spellcheck="false" placeholder="6-digit code">
+          </div>
+          <span class="login-hint">Lost your phone? Enter one of your recovery codes instead.</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-login">
+          <span>Sign In</span>
+          <i data-lucide="log-in" style="width: 1.15rem; height: 1.15rem;"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

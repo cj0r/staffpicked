@@ -1,0 +1,82 @@
+# Collections: one [[collection]] per collection. Paths are relative to this folder.
+# Copy this file to collections.toml and make it your own (StaffPicked and the web UI
+# create collections.toml from it on first run if it's missing).
+#
+# ============================================================================
+# KEY: every setting this file takes. Lines starting with # are ignored.
+# Text goes in "double quotes", true/false and numbers don't, and a list is
+# ["one", "two"]. The README ("collections.toml") has more on each one.
+# ============================================================================
+#
+# [settings]   once, at the top: applies to every collection
+#   use_list_descriptions = false      true/false. Use the MDBList/Trakt list's own
+#                                      description when a collection has none.
+#   refresh_new_releases = true        true/false. Refresh new releases' metadata so
+#                                      their ratings settle. New = both of these:
+#   new_release_added_days = 10        whole number: added to the server within this many days
+#   new_release_released_days = 30     whole number: released within this many days
+#
+# [[collection]]   once per collection; only name and sources are required
+#   name = "80s Horror"                text: the collection's name on the server
+#   sources = ["..."]                  list: where its films come from. Any of:
+#       "https://mdblist.com/lists/<user>/<list>"  "mdblist:<user>/<list>"  "mdblist:<list id>"
+#       "https://trakt.tv/users/<user>/lists/<list>"  "trakt:<user>/<list>"
+#       "trakt:<user>/watchlist"       (needs TRAKT_ACCESS_TOKEN)
+#       "collections/<file>.md"        your own list file (see list-template.md)
+#   active = "09-30 to 11-02"          optional season window. "MM-DD to MM-DD" repeats
+#                                      every year and may wrap the new year ("11-30 to 01-01");
+#                                      "2026-09-30 to 2026-11-02" happens once. Outside it the
+#                                      collection is taken off the server. Leave out = all year.
+#   poster = "images/my-poster.jpg"    optional image (formats below)
+#   backdrops = ["...", "..."]         optional list of one or more images (formats below)
+#   description = "Rubber suits."      optional text shown on the server
+#   sort_name = "0 80s Horror"         optional text: where it sorts on the server
+#   display_order = "release_date"     optional: the order of its films, "release_date" or
+#                                      "sort_name" (the same on Emby and Jellyfin). Leave out =
+#                                      whatever is set on the server.
+#   servers = ["Emby"]                 optional list: only these media servers (their names in
+#                                      Settings / SERVER_NAME). Leave out = every server.
+#
+# Images, for poster and backdrops:
+#   "images/<file>.jpg"                a file in this folder (.jpg, .jpeg, .png or .webp)
+#   "https://..."                      any image URL
+#   "tmdb:movie/<id>"  "tmdb:tv/<id>"  "tmdb:collection/<id>"   TMDB's best image (TMDB_API_TOKEN)
+#   "tmdb:/<file>.jpg"                 one exact TMDB image (TMDB_API_TOKEN)
+#   "fanart:movie/<TMDB or IMDb id>"  "fanart:tv/<TVDB id>"     fanart.tv (FANARTTV_API_KEY)
+#   "mediux:movie/<TMDB id>"  "mediux:collection/<TMDB id>"  "mediux:set/<set id>"   MediUX (MEDIUX_API_TOKEN)
+#   "mediux:<asset id>"                one exact MediUX image
+#   A ThePosterDB poster is added by hand: download it from theposterdb.com, then use "images/<file>.jpg"
+#
+# Example, with every setting:
+#   [[collection]]
+#   name = "80s Horror"
+#   sources = ["mdblist:someone/80s-horror", "collections/80s-extras.md"]
+#   active = "09-30 to 11-02"
+#   poster = "images/80s-horror.jpg"
+#   backdrops = ["tmdb:movie/586577", "images/80s-horror-backdrop.jpg"]
+#   description = "Rubber suits and synths."
+#   sort_name = "0 80s Horror"
+#   display_order = "release_date"
+#   servers = ["Emby"]
+# ============================================================================
+
+[settings]
+use_list_descriptions = false       # use each list's MDBList/Trakt description when a collection has none
+refresh_new_releases = true         # refresh metadata of new releases so their ratings settle
+new_release_added_days = 10         # ...if added to the server within this many days
+new_release_released_days = 30      # ...and released within this many days
+
+# An all-year collection from a public MDBList list
+[[collection]]
+name = "Trending Movies"
+sources = ["https://mdblist.com/lists/xinefq/trending-movie"]
+
+# A seasonal collection from your own list file (or mdblist:<user>/<list>,
+# a Trakt list, ...): only on the server from September 30 to November 2
+[[collection]]
+name = "Example Horror"
+sources = ["collections/example-list.md"]
+active = "09-30 to 11-02"
+backdrops = ["tmdb:/gE6lGe7f7QtX1R2pRpXu1AgH1hU.jpg"]   # a file in images/, a TMDB, fanart.tv,
+                                                       # MediUX or https:// image
+sort_name = "0 Example Horror"                          # optional; where it sorts on the server

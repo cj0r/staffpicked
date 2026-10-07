@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StaffPicked</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="stylesheet" href="vendor/fonts/fonts.css">
+  <script src="vendor/lucide.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo-area">
+        <img src="favicon.svg" alt="" class="logo-icon spin-hover">
+        <div class="brand-info">
+          <h1 class="brand-title" aria-label="StaffPicked"><span class="brand-chrome">Staff</span><span class="brand-script">Picked</span></h1>
+          <div class="brand-meta">
+            <span class="app-version" id="app-version">v0.0.0</span>
+            <div class="server-badges" id="emby-status">
+              <div class="connection-badge" title="Media server">
+                <span class="status-dot red"></span>
+                <span>Server: checking…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="header-account">
+          <div class="profile-select-wrapper account-pill" title="Which jobs run on schedule and from Run All">
+            <i data-lucide="layers" class="account-pill-icon"></i>
+            <select id="header-mode-selector" class="profile-select" aria-label="Mode">
+              <option value="both">Playlists + Collections</option>
+              <option value="playlists">Playlists only</option>
+              <option value="collections">Collections only</option>
+            </select>
+          </div>
+          <button id="btn-logout" class="account-pill account-pill-danger" title="Sign Out" style="display: none;">
+            <i data-lucide="log-out" class="account-pill-icon"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+        <div class="control-buttons-group">
+          <button id="btn-run-all" class="btn btn-secondary" title="Sync every job the mode allows">
+            <i data-lucide="play-circle" class="btn-icon"></i>
+            <span>Run All</span>
+          </button>
+          <button id="btn-files-toggle" class="btn btn-secondary admin-only" title="Edit the collection, playlist and genre configs and your list files">
+            <i data-lucide="file-pen-line" class="btn-icon"></i>
+            <span>Config Files</span>
+          </button>
+          <button id="btn-images-toggle" class="btn btn-secondary admin-only" title="Posters, thumbs and backdrops in the config folder, and clearing out old ones">
+            <i data-lucide="images" class="btn-icon"></i>
+            <span>Artwork</span>
+          </button>
+          <button id="btn-logs-toggle" class="btn btn-secondary admin-only" title="View Live Console Logs">
+            <i data-lucide="terminal" class="btn-icon"></i>
+            <span>Live Logs</span>
+          </button>
+          <button id="btn-settings-toggle" class="btn btn-secondary" title="Settings">
+            <i data-lucide="sliders" class="btn-icon"></i>
+            <span>Settings</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-grid">
+      <section class="dashboard-col left-col">
+        <div class="dashboard-card lists-card">
+          <div class="card-header">
+            <h3>On the Shelves</h3>
+            <div class="card-header-actions">
+              <div class="view-toggle" role="group" aria-label="Shelf view">
+                <button type="button" class="btn btn-icon-only" data-view="rows" title="Show as rows" aria-pressed="true"><i data-lucide="rows-3"></i></button>
+                <button type="button" class="btn btn-icon-only" data-view="covers" title="Show as tape covers" aria-pressed="false"><i data-lucide="layout-grid"></i></button>
+              </div>
+              <button id="btn-import" class="btn btn-secondary btn-xs" title="Bring collections and playlists already on the media server into StaffPicked">
+                <i data-lucide="download"></i><span>Import</span>
+              </button>
+              <button id="btn-new-entry" class="btn btn-primary btn-xs" title="Build a new collection or playlist, or give a genre your own artwork">
+                <i data-lucide="plus"></i><span>New</span>
+              </button>
+            </div>
+          </div>
+          <div class="tab-strip"><div class="log-tabs card-tabs" id="list-tabs"></div></div>
+          <!-- The open tab's sync controls, filled in by app.js -->
+          <div class="job-panel" id="job-panel"></div>
+          <!-- Filters for the open shelf: name search, one list, and season. app.js keeps them in step. -->
+          <div class="shelf-filters" id="shelf-filters" hidden>
+            <div class="shelf-filter-row">
+              <label class="shelf-search">
+                <i data-lucide="search"></i>
+                <input type="text" id="shelf-search" placeholder="Find a list by name" autocomplete="off" spellcheck="false" aria-label="Find a list by name">
+                <button type="button" class="shelf-search-clear" id="shelf-search-clear" title="Clear the search" aria-label="Clear the search" hidden><i data-lucide="x"></i></button>
+              </label>
+              <select id="shelf-pick" class="profile-select shelf-pick" aria-label="Show one list"></select>
+            </div>
+            <div class="shelf-chips" id="shelf-chips" role="group" aria-label="Filter by season"></div>
+          </div>
+          <div class="item-list" id="item-list"></div>
+          <p class="shelf-no-match" id="shelf-no-match" hidden></p>
+        </div>
+      </section>
+
+      <section class="dashboard-col right-col">
+        <div class="metrics-grid">
+          <div class="dashboard-card metric-card season-card" id="season-card" role="button" tabindex="0" title="Open the season calendar">
+            <div class="metric-icon purple"><i data-lucide="calendar-check"></i></div>
+            <div class="metric-content">
+              <span class="metric-label">In Season Today</span>
+              <span class="metric-value" id="stat-active">–</span>
+              <span class="metric-sub" id="stat-active-sub">&nbsp;</span>
+            </div>
+          </div>
+          <div class="dashboard-card metric-card">
+            <div class="metric-icon blue"><i data-lucide="clock"></i></div>
+            <div class="metric-content">
+              <span class="metric-label">Next Scheduled Run</span>
+              <span class="metric-value" id="stat-next">–</span>
+              <span class="metric-sub" id="stat-next-sub">&nbsp;</span>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-card history-card">
+          <div class="card-header">
+            <h3>Recent Runs</h3>
+            <i data-lucide="history" class="header-icon text-blue"></i>
+          </div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-left">
+        <a href="https://github.com/cj0r/staffpicked" target="_blank" rel="noopener" class="footer-link">
+          <i data-lucide="github"></i>
+          <span>GitHub Repository</span>
+          <i data-lucide="external-link" class="external-icon"></i>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+  <!-- Settings -->
+  <div id="settings-drawer" class="settings-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="sliders" class="text-blue"></i>
+        <h3>Settings</h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close Settings"><i data-lucide="x"></i></button>
+    </div>
+    <div class="settings-form admin-mode-section">
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Admin Mode</h4></div>
+        <p class="field-hint full-width">Shows the behind-the-counter tools: Config Files, Artwork, Live Logs, the Dry run checkbox and every delete and remove button. Disable it for a cleaner shelf when you only build lists and sync them. Nothing is changed or deleted by enabling or disabling it; it's remembered in this browser only.</p>
+        <div class="form-group toggle-group full-width">
+          <label class="toggle-switch">
+            <input type="checkbox" id="admin-mode-toggle">
+            <span class="slider"></span>
+          </label>
+          <label for="admin-mode-toggle" class="toggle-label" id="admin-mode-label">Disabled</label>
+        </div>
+      </div>
+    </div>
+
+    <form id="settings-form" class="settings-form" novalidate>
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Media Servers</h4></div>
+        <p class="field-hint full-width">Every collection, playlist and genre goes to every server here, unless its own Servers setting picks some. Each server has its own admin user and playlist viewers.</p>
+      </div>
+      <div class="server-cards" id="server-cards"></div>
+      <div class="list-actions">
+        <button type="button" class="btn btn-secondary btn-xs" id="btn-add-server"><i data-lucide="plus"></i><span>Add Server</span></button>
+      </div>
+      <div class="form-grid" id="settings-fields"></div>
+
+      <div class="drawer-actions">
+        <button type="button" class="btn btn-secondary" id="btn-test-emby">
+          <i data-lucide="plug-zap" class="btn-icon"></i><span>Test Connections</span>
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="save" class="btn-icon"></i><span>Save Settings</span>
+        </button>
+      </div>
+    </form>
+
+    <form id="password-form" class="settings-form" novalidate>
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Web Access</h4></div>
+        <div class="form-group" id="current-password-group">
+          <label for="current-password">Current password</label>
+          <input type="password" id="current-password" autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label for="new-password">New password</label>
+          <input type="password" id="new-password" autocomplete="new-password" placeholder="at least 8 characters">
+          <span class="field-hint" id="password-hint">No password is set, so the UI only opens from your local network.</span>
+        </div>
+        <div class="form-group" id="password-code-group" hidden>
+          <label for="password-code">Authenticator code</label>
+          <input type="text" id="password-code" autocomplete="one-time-code" inputmode="numeric" spellcheck="false" placeholder="or a recovery code">
+        </div>
+      </div>
+      <div class="drawer-actions">
+        <button type="button" class="btn btn-danger-light" id="btn-remove-password" style="display: none;">
+          <i data-lucide="lock-open" class="btn-icon"></i><span>Remove Password</span>
+        </button>
+        <button type="submit" class="btn btn-secondary">
+          <i data-lucide="lock" class="btn-icon"></i><span>Set Password</span>
+        </button>
+      </div>
+    </form>
+
+    <div class="settings-form" id="mfa-section">
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Two-Factor Sign-In</h4></div>
+        <p class="field-hint full-width" id="mfa-status">Sign in with your password and a code from an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password, Bitwarden, Aegis, 2FAS and the like).</p>
+        <div class="form-group" id="mfa-current-group">
+          <label for="mfa-current">Current password</label>
+          <input type="password" id="mfa-current" autocomplete="current-password">
+        </div>
+        <div class="form-group" id="mfa-code-group">
+          <label for="mfa-code">Authenticator code</label>
+          <input type="text" id="mfa-code" autocomplete="one-time-code" inputmode="numeric" spellcheck="false" placeholder="or a recovery code">
+        </div>
+        <div class="full-width mfa-enroll" id="mfa-enroll" hidden>
+          <p class="field-hint">Scan this with your authenticator app, or type the key into it. Then enter the 6-digit code it shows.</p>
+          <div class="mfa-qr" id="mfa-qr"></div>
+          <code class="mfa-secret" id="mfa-secret"></code>
+          <div class="form-group">
+            <label for="mfa-new-code">Code from the app</label>
+            <input type="text" id="mfa-new-code" autocomplete="one-time-code" inputmode="numeric" spellcheck="false" placeholder="6-digit code">
+          </div>
+        </div>
+        <div class="full-width mfa-codes" id="mfa-recovery" hidden>
+          <p class="field-hint">Your recovery codes. Each one signs you in once without the app. Keep them somewhere safe, like a password manager: they won't be shown again.</p>
+          <ol class="mfa-code-list" id="mfa-code-list"></ol>
+          <button type="button" class="btn btn-secondary" id="btn-mfa-copy">
+            <i data-lucide="copy" class="btn-icon"></i><span>Copy Codes</span>
+          </button>
+        </div>
+      </div>
+      <div class="drawer-actions">
+        <button type="button" class="btn btn-danger-light" id="btn-mfa-disable" hidden>
+          <i data-lucide="shield-off" class="btn-icon"></i><span>Turn Off</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="btn-mfa-recovery" hidden>
+          <i data-lucide="key-round" class="btn-icon"></i><span>New Recovery Codes</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="btn-mfa-setup" hidden>
+          <i data-lucide="shield-check" class="btn-icon"></i><span>Set Up</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="btn-mfa-enable" hidden>
+          <i data-lucide="shield-check" class="btn-icon"></i><span>Turn On</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-form config-backup">
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Backup</h4></div>
+        <p class="field-hint full-width">Your whole config folder as one zip: settings and keys, collections, playlists, genres, list files and artwork. It holds your API keys and passwords, so keep it somewhere private. Restoring puts its files back and leaves any others alone; the config as it was is saved in backups/restores first.</p>
+      </div>
+      <div class="drawer-actions">
+        <a class="btn btn-secondary" id="btn-config-download" href="api/config/download" download>
+          <i data-lucide="download" class="btn-icon"></i><span>Download Config</span>
+        </a>
+        <button type="button" class="btn btn-secondary admin-only" id="btn-config-restore">
+          <i data-lucide="archive-restore" class="btn-icon"></i><span>Restore from File</span>
+        </button>
+        <input type="file" id="config-restore-file" accept=".zip,application/zip" hidden>
+      </div>
+    </div>
+
+    <div class="settings-form bulk-ops admin-only">
+      <div class="form-grid">
+        <div class="form-section full-width"><h4>Bulk Operations</h4></div>
+        <p class="field-hint full-width">Delete every configured collection or playlist from the media server, or take StaffPicked's artwork off every configured genre. You see the full list and approve it first. Config files stay, and the next sync puts back any that are in season.</p>
+      </div>
+      <div class="drawer-actions bulk-actions" id="bulk-actions"></div>
+    </div>
+  </div>
+
+  <!-- Live logs -->
+  <div id="logs-drawer" class="settings-drawer logs-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="terminal" class="text-blue"></i>
+        <h3>Live Console Logs</h3>
+      </div>
+      <div class="drawer-actions-inline">
+        <button id="btn-clear-console" class="btn btn-icon-only" title="Clear Viewport"><i data-lucide="eraser"></i></button>
+        <button id="btn-clear-server-logs" class="btn btn-icon-only btn-danger-light" title="Delete Logs from Server"><i data-lucide="trash-2"></i></button>
+        <a id="btn-download-logs" href="#" class="btn btn-icon-only" title="Download Full Log"><i data-lucide="download"></i></a>
+        <button class="btn btn-icon-only" data-close title="Close Logs"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+    <div class="log-tabs" id="log-tabs"></div>
+    <div class="console-wrapper">
+      <pre id="console-output"></pre>
+    </div>
+  </div>
+
+  <!-- Config files -->
+  <div id="files-drawer" class="settings-drawer logs-drawer files-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="file-pen-line" class="text-blue"></i>
+        <h3>Config Files</h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="log-tabs" id="file-tabs"></div>
+    <div class="file-toolbar">
+      <select id="file-selector" class="profile-select file-select" aria-label="File"></select>
+      <button type="button" id="btn-new-file" class="btn btn-secondary btn-xs" title="New list file from the template">
+        <i data-lucide="plus"></i><span>New</span>
+      </button>
+      <button type="button" id="btn-delete-file" class="btn btn-danger-light btn-xs" title="Delete this file">
+        <i data-lucide="trash-2"></i><span>Delete</span>
+      </button>
+      <button type="button" id="btn-restore-file" class="btn btn-secondary btn-xs" title="Bring back an earlier version of this file">
+        <i data-lucide="undo-2"></i><span>Restore Previous</span>
+      </button>
+      <span class="file-dirty" id="file-dirty"></span>
+    </div>
+    <textarea id="file-editor" class="file-editor" spellcheck="false" placeholder="Pick a file"></textarea>
+    <div class="drawer-actions">
+      <button type="button" class="btn btn-secondary" id="btn-check-file" title="Validate the config without touching the media server (saves your edits first)">
+        <i data-lucide="list-checks" class="btn-icon"></i><span>Check Config</span>
+      </button>
+      <button type="button" class="btn btn-primary" id="btn-save-file">
+        <i data-lucide="save" class="btn-icon"></i><span>Save</span>
+      </button>
+    </div>
+    <div class="console-wrapper check-output" id="check-output-wrapper" style="display: none;">
+      <pre id="check-output"></pre>
+    </div>
+  </div>
+
+  <!-- Build a collection or playlist -->
+  <div id="entry-drawer" class="settings-drawer entry-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="clapperboard" class="text-blue"></i>
+        <h3 id="entry-title">New Collection</h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+    </div>
+    <form id="entry-form" class="settings-form" novalidate>
+      <div class="form-grid" id="entry-fields"></div>
+      <input type="file" id="upload-input" accept="image/jpeg,image/png,image/webp" hidden>
+      <div class="builder-notes" id="entry-notes"></div>
+      <div class="drawer-actions">
+        <button type="button" class="btn btn-danger-light admin-only" id="btn-entry-delete"><i data-lucide="trash-2" class="btn-icon"></i><span>Delete</span></button>
+        <button type="button" class="btn btn-secondary" id="btn-entry-duplicate" title="Start a new entry with these settings, e.g. for a seasonal variant"><i data-lucide="copy" class="btn-icon"></i><span>Duplicate</span></button>
+        <button type="button" class="btn btn-secondary" id="btn-entry-films"><i data-lucide="list-ordered" class="btn-icon"></i><span>Edit Films</span></button>
+        <button type="submit" class="btn btn-primary"><i data-lucide="save" class="btn-icon"></i><span>Save</span></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- A list file's films, in order -->
+  <div id="watchlist-drawer" class="settings-drawer logs-drawer watchlist-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="list-ordered" class="text-blue"></i>
+        <h3 id="watchlist-title">List</h3>
+      </div>
+      <div class="drawer-actions-inline">
+        <span class="file-dirty" id="watchlist-dirty"></span>
+        <button type="button" class="btn btn-primary btn-xs" id="btn-watchlist-save"><i data-lucide="save"></i><span>Save</span></button>
+        <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+    <p class="watchlist-sub" id="watchlist-sub"></p>
+    <form id="search-form" class="search-bar" novalidate>
+      <input type="text" inputmode="search" id="search-q" placeholder="Find a film by title, or paste an IMDb ID or link" autocomplete="off">
+      <select id="search-type" class="profile-select" aria-label="Type">
+        <option value="movie">Movies</option>
+        <option value="show">Shows</option>
+      </select>
+      <button type="submit" class="btn btn-secondary btn-xs"><i data-lucide="search"></i><span>Search</span></button>
+    </form>
+    <div class="search-results" id="search-results"></div>
+    <div class="film-list" id="film-list"></div>
+  </div>
+
+  <!-- The year at a glance: when each seasonal list is on the server -->
+  <div id="calendar-drawer" class="settings-drawer logs-drawer calendar-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="calendar-range" class="text-blue"></i>
+        <h3>Season Calendar</h3>
+      </div>
+      <div class="drawer-actions-inline">
+        <button type="button" class="btn btn-icon-only" id="btn-cal-prev" title="Previous year"><i data-lucide="chevron-left"></i></button>
+        <span class="cal-year" id="cal-year"></span>
+        <button type="button" class="btn btn-icon-only" id="btn-cal-next" title="Next year"><i data-lucide="chevron-right"></i></button>
+        <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+    <p class="field-hint">When each collection and playlist is on the server. Click a list to see its films.</p>
+    <div class="calendar" id="calendar"></div>
+  </div>
+
+  <!-- One collection or playlist: the films it gets -->
+  <div id="list-drawer" class="settings-drawer logs-drawer list-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="film" class="text-blue"></i>
+        <h3 id="list-title">List</h3>
+      </div>
+      <div class="drawer-actions-inline">
+        <button type="button" class="btn btn-icon-only" id="btn-list-export" title="Save as a list file you can edit" hidden><i data-lucide="file-down"></i></button>
+        <button type="button" class="btn btn-icon-only" id="btn-list-edit" title="Edit"><i data-lucide="pencil"></i></button>
+        <button type="button" class="btn btn-icon-only btn-danger-light admin-only" id="btn-list-remove" title="Remove from the media server"><i data-lucide="trash-2"></i></button>
+        <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+    <div class="list-summary" id="list-summary">
+      <div class="list-poster" id="list-poster"></div>
+      <div class="list-facts">
+        <dl class="list-details" id="list-details"></dl>
+        <div class="list-feeds" id="list-feeds"></div>
+      </div>
+    </div>
+    <div class="list-held" id="list-held" hidden>
+      <i data-lucide="octagon-alert"></i>
+      <span><strong>The last sync was held back</strong> so it wouldn't empty this list. If the list really shrank, sync it anyway to take those films off.</span>
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-list-anyway"><i data-lucide="play"></i><span>Sync Anyway</span></button>
+    </div>
+    <div class="list-art" id="list-art"></div>
+    <div class="builder-notes" id="list-notes"></div>
+    <div class="list-library" id="list-library"></div>
+    <div class="film-list" id="list-items"></div>
+  </div>
+
+  <!-- One run's output, opened from Recent Runs -->
+  <div id="run-drawer" class="settings-drawer logs-drawer run-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="history" class="text-blue"></i>
+        <h3 id="run-title">Run</h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+    </div>
+    <p class="watchlist-sub" id="run-sub"></p>
+    <div id="run-changes" class="run-changes"></div>
+    <div class="console-wrapper"><pre id="run-output"></pre></div>
+  </div>
+
+  <!-- Artwork files -->
+  <div id="images-drawer" class="settings-drawer logs-drawer images-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="images" class="text-blue"></i>
+        <h3>Artwork</h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+    </div>
+    <p class="watchlist-sub">Poster, thumb and backdrop files in images/ and next to your list files. Files a collection, playlist or genre uses can't be deleted. Archived files are older copies StaffPicked kept when it saved a newer one.</p>
+    <div class="file-toolbar">
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-images-select-stale"><i data-lucide="check-square"></i><span>Select Unused &amp; Archived</span></button>
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-images-select-none"><i data-lucide="square"></i><span>Clear</span></button>
+      <button type="button" class="btn btn-danger-light btn-xs" id="btn-images-delete" disabled><i data-lucide="trash-2"></i><span>Review &amp; Delete</span></button>
+    </div>
+    <div class="image-list" id="image-list"></div>
+  </div>
+
+  <!-- Collections and playlists already on the server -->
+  <div id="import-drawer" class="settings-drawer logs-drawer images-drawer import-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-area">
+        <i data-lucide="download" class="text-blue"></i>
+        <h3>Import from <span class="server-name">Emby</span></h3>
+      </div>
+      <button class="btn btn-icon-only" data-close title="Close"><i data-lucide="x"></i></button>
+    </div>
+    <p class="watchlist-sub">What's already on <span class="server-name">Emby</span> (collections, playlists, and genres that have artwork), and whether StaffPicked manages it. Importing adds it to StaffPicked, artwork included. A collection whose MDBList or Trakt list can be found keeps following that list; for one it can't find, you're asked for the list's link, or Skip to keep a fixed list of the films it holds now. Playlists become fixed lists. Linking renames a StaffPicked entry whose name is nearly the same, so it updates the one already there instead of building a second. Only the config folder changes here; nothing on the server is changed or deleted.</p>
+    <div class="file-toolbar">
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-import-select-all"><i data-lucide="check-square"></i><span>Select All</span></button>
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-import-select-none"><i data-lucide="square"></i><span>Clear</span></button>
+      <select class="profile-select" id="import-server" aria-label="Server to import from" style="display: none;"></select>
+      <button type="button" class="btn btn-secondary btn-xs" id="btn-import-refresh"><i data-lucide="refresh-cw"></i><span>Rescan</span></button>
+      <button type="button" class="btn btn-primary btn-xs" id="btn-import-go" disabled><i data-lucide="download"></i><span>Review &amp; Import</span></button>
+    </div>
+    <div class="builder-notes" id="import-notes"></div>
+    <div class="image-list" id="import-list"></div>
+  </div>
+
+  <!-- Review before deleting anything -->
+  <!-- Pick an earlier version of a config file -->
+  <div id="restore-overlay" class="app-confirm-overlay" style="display: none;">
+    <div class="app-confirm-card review-card" role="dialog" aria-modal="true" aria-labelledby="restore-title">
+      <h4 id="restore-title" class="review-title">Restore an earlier version</h4>
+      <p class="app-confirm-message" id="restore-intro"></p>
+      <div class="restore-list" id="restore-list" role="radiogroup" aria-labelledby="restore-title"></div>
+      <p class="field-hint">It opens in the editor first. Nothing changes until you Save, and the version you replace is kept too.</p>
+      <div class="app-confirm-actions">
+        <button type="button" id="restore-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="restore-ok" class="btn btn-primary">Open in Editor</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="review-overlay" class="app-confirm-overlay" style="display: none;">
+    <div class="app-confirm-card review-card" role="dialog" aria-modal="true" aria-labelledby="review-title">
+      <h4 id="review-title" class="review-title"></h4>
+      <p id="review-intro" class="app-confirm-message"></p>
+      <ul id="review-list" class="review-list"></ul>
+      <label id="review-option" class="review-option" style="display: none;">
+        <input type="checkbox" id="review-option-box">
+        <span id="review-option-text"></span>
+      </label>
+      <p id="review-foot" class="field-hint"></p>
+      <div class="app-confirm-actions">
+        <button type="button" id="review-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="review-ok" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Closing a drawer with unsaved edits -->
+  <div id="unsaved-overlay" class="app-confirm-overlay" style="display: none;">
+    <div class="app-confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="unsaved-title" aria-describedby="unsaved-message">
+      <h4 id="unsaved-title" class="review-title">Save your changes?</h4>
+      <p id="unsaved-message" class="app-confirm-message"></p>
+      <div class="app-confirm-actions unsaved-actions">
+        <button type="button" id="unsaved-keep" class="btn btn-secondary">Keep Editing</button>
+        <button type="button" id="unsaved-discard" class="btn btn-danger-light">Discard</button>
+        <button type="button" id="unsaved-save" class="btn btn-primary"><i data-lucide="save" class="btn-icon"></i><span>Save</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- First run: set up a media server (and optionally list keys and a password) before anything syncs -->
+  <div id="setup-overlay" class="app-confirm-overlay setup-overlay" style="display: none;">
+    <div class="app-confirm-card setup-card" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <h3 id="setup-title" class="setup-title"><span class="brand-chrome">Staff</span><span class="brand-script">Picked</span></h3>
+      <p class="setup-tagline">Opening night. Let's stock the shelves.</p>
+      <ol class="setup-steps" id="setup-steps">
+        <li data-step="1" class="active">Server</li>
+        <li data-step="2">Lists</li>
+        <li data-step="3">Password</li>
+      </ol>
+      <div class="setup-step" data-step="1">
+        <p class="field-hint">Nothing syncs until StaffPicked can reach your media server.</p>
+        <div class="form-group">
+          <label for="setup-type">Server type</label>
+          <select id="setup-type"><option value="emby">Emby</option><option value="jellyfin">Jellyfin</option></select>
+        </div>
+        <div class="form-group">
+          <label for="setup-url">Server URL</label>
+          <input type="text" id="setup-url" placeholder="http://192.168.1.10:8096" autocomplete="off" spellcheck="false">
+          <span class="field-hint">As you open it in a browser. In Docker, use the server's LAN address, not localhost.</span>
+        </div>
+        <div class="form-group">
+          <label for="setup-key">API key</label>
+          <input type="password" id="setup-key" autocomplete="new-password">
+          <span class="field-hint">Emby: Manage Emby Server &gt; Advanced &gt; API Keys. Jellyfin: Dashboard &gt; API Keys.</span>
+        </div>
+        <div class="setup-test">
+          <button type="button" class="btn btn-secondary btn-xs" id="btn-setup-test"><i data-lucide="plug-zap"></i><span>Test</span></button>
+          <span class="field-hint" id="setup-test-result"></span>
+        </div>
+      </div>
+      <div class="setup-step" data-step="2" hidden>
+        <p class="field-hint">Optional. Lists from MDBList or Trakt need a key; your own list files don't. You can add these later in Settings.</p>
+        <div class="form-group">
+          <label for="setup-mdblist">MDBList API key</label>
+          <input type="password" id="setup-mdblist" autocomplete="new-password" placeholder="optional">
+          <span class="field-hint">mdblist.com/preferences, under API Access.</span>
+        </div>
+        <div class="form-group">
+          <label for="setup-trakt">Trakt client ID</label>
+          <input type="password" id="setup-trakt" autocomplete="new-password" placeholder="optional">
+          <span class="field-hint">From an app at trakt.tv/oauth/applications.</span>
+        </div>
+      </div>
+      <div class="setup-step" data-step="3" hidden>
+        <p class="field-hint" id="setup-password-intro">Until it has a password, StaffPicked only opens from your local network.</p>
+        <div class="form-group" id="setup-password-fields">
+          <label for="setup-password">Password</label>
+          <input type="password" id="setup-password" autocomplete="new-password" placeholder="at least 8 characters">
+          <label for="setup-password2">Again</label>
+          <input type="password" id="setup-password2" autocomplete="new-password">
+        </div>
+        <label class="setup-skip-password"><input type="checkbox" id="setup-no-password"> Skip it, I only use it at home</label>
+      </div>
+      <div class="app-confirm-actions setup-actions">
+        <button type="button" class="btn btn-secondary" id="btn-setup-later">Later</button>
+        <button type="button" class="btn btn-secondary" id="btn-setup-back" hidden>Back</button>
+        <button type="button" class="btn btn-primary" id="btn-setup-next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-confirm-overlay" class="app-confirm-overlay" style="display: none;">
+    <div class="app-confirm-card">
+      <p id="app-confirm-message" class="app-confirm-message"></p>
+      <div id="app-confirm-input-wrapper" class="app-confirm-input-wrapper" style="display: none;">
+        <input type="text" id="app-confirm-input" class="app-confirm-input">
+      </div>
+      <div class="app-confirm-actions">
+        <button type="button" id="app-confirm-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="app-confirm-ok" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="vendor/qrcode.js"></script>
+  <script src="app.js"></script>
+  <script src="builder.js"></script>
+</body>
+</html>

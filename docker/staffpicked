@@ -1,0 +1,8 @@
+#!/bin/sh
+# Command line inside the container, as the PUID:PGID user:
+#   docker exec -it staffpicked staffpicked check
+#   docker exec -it staffpicked staffpicked reset-login    (lost the UI password or authenticator)
+if [ "$1" = "reset-login" ]; then
+    exec python /app/docker/entrypoint.py python /app/web/server.py reset-login
+fi
+exec python /app/docker/entrypoint.py python -m scripts "$@"

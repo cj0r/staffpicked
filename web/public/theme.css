@@ -1,0 +1,515 @@
+/* StaffPicked theme: an 80s video store after dark.
+   Neon tube light (magenta, cyan, violet) over a black room, a synthwave
+   grid on the floor, chrome-and-script signage, VHS on-screen-display type,
+   checkerboard tile and the red of the horror aisle. Loaded after style.css
+   and app.css, so it only restyles; the layout stays the same. */
+
+:root {
+  --neon-pink: #ff2bd6;
+  --neon-cyan: #22e4ff;
+  --neon-violet: #8b5cff;
+  --horror-red: #ff2e3b;
+  --vhs-white: #f4f1ff;
+
+  --bg-color: #07030f;
+  --card-bg: rgba(14, 7, 28, 0.78);
+  --card-border: rgba(139, 92, 255, 0.28);
+  --text-main: #f4f1ff;
+  --text-muted: #b6a8d9;
+  --text-dark: #7d6fa6;
+
+  --primary: var(--neon-pink);
+  --primary-hover: #e01cbc;
+  --primary-gradient: linear-gradient(135deg, #ff2bd6 0%, #8b5cff 100%);
+  --success: #2dfcb4;
+  --danger: var(--horror-red);
+  --danger-gradient: linear-gradient(135deg, #ff2e3b 0%, #b0122c 100%);
+  --info: var(--neon-cyan);
+  --warning: #ffcf3f;
+  --console-bg: #05020b;
+  --console-border: rgba(34, 228, 255, 0.25);
+
+  --font-osd: 'VT323', var(--font-mono);
+  --font-sign: 'Bungee', var(--font-main);
+  --font-script: 'Mr Dafoe', cursive;
+  --glow-pink: 0 0 6px rgba(255, 43, 214, 0.75), 0 0 22px rgba(255, 43, 214, 0.35);
+  --glow-cyan: 0 0 6px rgba(34, 228, 255, 0.7), 0 0 22px rgba(34, 228, 255, 0.3);
+}
+
+/* ---------------------------------------------------------------- the room */
+
+body,
+body[style] {
+  background-color: var(--bg-color) !important;
+  /* Thick, faint scanlines on the page background only. Cards blur what's behind
+     them, so the lines never cross buttons, fields or list rows. */
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 3px, transparent 3px 6px),
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(139, 92, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 43, 214, 0.18), transparent 70%) !important;
+  background-attachment: fixed;
+}
+
+/* the synthwave floor: a neon grid running to the horizon */
+body::before {
+  content: '';
+  position: fixed;
+  left: -50%;
+  right: -50%;
+  bottom: -10vh;
+  height: 55vh;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 43, 214, 0.55) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 43, 214, 0.55) 2px, transparent 2px);
+  background-size: 70px 70px;
+  transform: perspective(320px) rotateX(62deg);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 85%);
+}
+
+/* A worn rental tape: fine scanlines in the signage (the logo and the headings),
+   never on the cards or the controls. They're cut into the letters
+   with a mask, so they show only where there's ink and never as a dark box.
+   Lines 2px apart alias less than 1px ones on scaled displays. The dark tube
+   vignette sits over everything. */
+:root {
+  --scanlines: repeating-linear-gradient(to bottom, #000 0 2px, rgba(0, 0, 0, 0.5) 2px 4px);
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: radial-gradient(ellipse 120% 100% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+}
+.brand-title,
+.card-header h3,
+.status-header h3,
+.drawer-title-area h3 {
+  -webkit-mask-image: var(--scanlines);
+  mask-image: var(--scanlines);
+}
+
+/* ... tape grain that crawls ... */
+html::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.11;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.2 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: vhs-grain 0.9s steps(6) infinite;
+}
+@keyframes vhs-grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -4%); }
+  60% { transform: translate(-4%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ... and a tracking band that rolls down the screen now and then */
+html::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -15vh;
+  height: 9vh;
+  z-index: 9998;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px),
+    linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.06) 40%, rgba(180, 220, 255, 0.09) 55%, transparent);
+  filter: blur(0.6px);
+  animation: vhs-tracking 11s linear infinite;
+}
+@keyframes vhs-tracking {
+  0%, 55% { transform: translateY(0); opacity: 0; }
+  56% { opacity: 1; }
+  100% { transform: translateY(130vh); opacity: 1; }
+}
+
+/* signage bleeds a little red and cyan at the edges, like a smeared tape */
+.card-header h3,
+.status-header h3,
+.drawer-title-area h3 {
+  text-shadow: -1px 0 rgba(255, 46, 59, 0.55), 1px 0 rgba(34, 228, 255, 0.55), 0 0 10px rgba(139, 92, 255, 0.6) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before, html::after { animation: none; }
+  html::after { display: none; }
+}
+
+/* ---------------------------------------------------------------- signage */
+
+.brand-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  line-height: 1;
+}
+.brand-chrome {
+  font-family: var(--font-sign);
+  font-size: 2.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  /* chrome lettering: sky, white horizon line, then violet ground */
+  background: linear-gradient(180deg, #ffffff 0%, #b9d4ff 38%, #ffffff 50%, #5b3fd1 52%, #c9a8ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #2a0f5c) drop-shadow(0 0 10px rgba(139, 92, 255, 0.6));
+}
+.brand-script {
+  font-family: var(--font-script);
+  font-size: 2.6rem;
+  color: var(--neon-pink);
+  -webkit-text-fill-color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+  transform: rotate(-6deg) translateY(0.35rem);
+  margin-left: -0.35rem;
+  margin-right: 1.1rem;
+  padding-right: 0.25rem;
+}
+.logo-icon { filter: drop-shadow(0 0 10px rgba(255, 43, 214, 0.55)); }
+
+/* the version tag and server badge read like a VCR's on-screen display */
+.app-version,
+.brand-meta .app-version,
+.connection-badge {
+  font-family: var(--font-osd);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  border-radius: 0.2rem;
+  padding: 0 0.45rem;
+}
+.app-version {
+  background: rgba(255, 43, 214, 0.12);
+  border: 1px solid rgba(255, 43, 214, 0.55);
+  color: #ffd1f5;
+}
+.connection-badge {
+  background: rgba(34, 228, 255, 0.08);
+  border: 1px solid rgba(34, 228, 255, 0.45);
+  color: #c9f8ff;
+}
+.status-dot.green { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.status-dot.red { background: var(--horror-red); box-shadow: 0 0 8px var(--horror-red); }
+
+/* the checkerboard tile floor between the sign and the aisles */
+.app-header {
+  border-bottom: none;
+  position: relative;
+  padding-bottom: 2rem;
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12px;
+  background: repeating-conic-gradient(#f4f1ff 0 25%, #0b0614 0 50%) 0 0 / 12px 12px;
+  opacity: 0.85;
+  box-shadow: 0 -1px 0 var(--neon-pink), 0 1px 0 var(--neon-cyan), 0 0 18px rgba(255, 43, 214, 0.35);
+}
+
+/* ---------------------------------------------------------------- aisles (cards) */
+
+.dashboard-card {
+  position: relative;
+  border-radius: 0.9rem;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+/* a neon tube along the top edge of every shelf */
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon-violet), var(--neon-pink), var(--neon-cyan));
+  box-shadow: 0 0 12px rgba(255, 43, 214, 0.7), 0 0 30px rgba(139, 92, 255, 0.45);
+}
+.dashboard-card:hover { border-color: rgba(255, 43, 214, 0.45); }
+
+.card-header h3,
+.status-header h3 {
+  font-family: var(--font-sign);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vhs-white);
+  text-shadow: 0 0 10px rgba(139, 92, 255, 0.6);
+}
+.status-direction { color: var(--text-muted); }
+.text-purple, .header-icon.text-purple { color: var(--neon-pink); filter: drop-shadow(0 0 6px rgba(255, 43, 214, 0.7)); }
+.text-blue, .header-icon.text-blue { color: var(--neon-cyan); filter: drop-shadow(0 0 6px rgba(34, 228, 255, 0.7)); }
+
+/* status badges as VCR mode readouts */
+.pulse-badge {
+  font-family: var(--font-osd);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  border-radius: 0.2rem;
+  padding: 0 0.6rem;
+}
+.pulse-badge.idle { color: #c9f8ff; background: rgba(34, 228, 255, 0.1); border-color: rgba(34, 228, 255, 0.5); }
+.pulse-badge.syncing { color: #b9ffe6; background: rgba(45, 252, 180, 0.12); border-color: rgba(45, 252, 180, 0.55); text-shadow: 0 0 6px var(--success); }
+.pulse-badge.syncing::before { content: '\25B6\00a0'; }   /* ▶ PLAY */
+.pulse-badge.failed { color: #ffd0d3; background: rgba(255, 46, 59, 0.14); border-color: rgba(255, 46, 59, 0.6); text-shadow: 0 0 6px var(--horror-red); }
+
+.metric-icon { border-radius: 0.6rem; }
+.metric-icon.purple { color: var(--neon-pink); background: rgba(255, 43, 214, 0.1); border-color: rgba(255, 43, 214, 0.45); box-shadow: 0 0 14px rgba(255, 43, 214, 0.25); }
+.metric-icon.blue { color: var(--neon-cyan); background: rgba(34, 228, 255, 0.08); border-color: rgba(34, 228, 255, 0.45); box-shadow: 0 0 14px rgba(34, 228, 255, 0.2); }
+.metric-label { color: var(--text-muted); letter-spacing: 0.12em; }
+.metric-value {
+  font-family: var(--font-osd);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--vhs-white);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+}
+
+/* list rows: tapes on the shelf, with a colored label strip down the spine */
+.item-row {
+  border-radius: 0.35rem;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  border-left: 4px solid var(--neon-violet);
+}
+.item-row:nth-child(3n + 2) { border-left-color: var(--neon-pink); }
+.item-row:nth-child(3n + 3) { border-left-color: var(--neon-cyan); }
+.item-row:hover { border-color: rgba(255, 43, 214, 0.5); border-left-color: var(--neon-pink); box-shadow: 0 0 16px rgba(255, 43, 214, 0.18); }
+.season-badge { font-family: var(--font-osd); font-size: 0.95rem; font-weight: 400; letter-spacing: 0.08em; border-radius: 0.2rem; }
+.season-badge.on { color: #b9ffe6; border-color: rgba(45, 252, 180, 0.5); text-shadow: 0 0 6px rgba(45, 252, 180, 0.8); }
+.season-badge.bad { color: #ffd0d3; border-color: rgba(255, 46, 59, 0.6); }
+
+.history-row { border-radius: 0.35rem; }
+.history-dot.ok { box-shadow: 0 0 8px var(--success); }
+.history-dot.failed { box-shadow: 0 0 8px var(--horror-red); }
+.history-meta { font-family: var(--font-osd); font-size: 0.95rem; letter-spacing: 0.04em; }
+
+/* tabs: lit like the aisle signs */
+.log-tab { letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.78rem; }
+.log-tab.active { color: var(--neon-pink); border-bottom-color: var(--neon-pink); text-shadow: var(--glow-pink); }
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn { border-radius: 0.45rem; letter-spacing: 0.02em; }
+.btn-primary {
+  background: var(--primary-gradient);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset, 0 0 18px rgba(255, 43, 214, 0.45);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+.btn-primary:hover:not(:disabled) { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 0 28px rgba(255, 43, 214, 0.75); transform: translateY(-1px); }
+.btn-secondary {
+  background: rgba(10, 4, 22, 0.6);
+  border: 1px solid rgba(34, 228, 255, 0.4);
+  color: #e6fbff;
+}
+.btn-secondary:hover:not(:disabled) { border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); background: rgba(34, 228, 255, 0.08); }
+.btn-danger { background: var(--danger-gradient); box-shadow: 0 0 14px rgba(255, 46, 59, 0.35); }
+.btn-danger:disabled { box-shadow: none; }
+.btn-danger-light { color: #ff8a92; border: 1px solid rgba(255, 46, 59, 0.45); background: rgba(255, 46, 59, 0.08); }
+.btn-danger-light:hover:not(:disabled) { box-shadow: 0 0 14px rgba(255, 46, 59, 0.45); }
+.btn-icon-only { border-radius: 0.4rem; }
+
+.control-buttons-group .btn { text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.08em; }
+/* On a phone all five buttons (Admin Mode on) share one row: smaller type, and a
+   two-word label wraps under its icon instead of running into the next button. */
+@media (max-width: 768px) {
+  .control-buttons-group { gap: 0.4rem; }
+  .control-buttons-group .btn { font-size: 0.62rem; letter-spacing: 0.04em; padding: 0.45rem 0.15rem; overflow: hidden; }
+  .control-buttons-group .btn span { white-space: normal !important; text-align: center; line-height: 1.15; overflow-wrap: normal; }
+}
+@media (max-width: 380px) {
+  .control-buttons-group { gap: 0.3rem; }
+  .control-buttons-group .btn { font-size: 0.56rem; letter-spacing: 0.02em; padding: 0.45rem 0.1rem; }
+}
+/* the very narrowest phones keep just the icons; each button's title still names it */
+@media (max-width: 340px) {
+  .control-buttons-group .btn span { display: none !important; }
+  .control-buttons-group .btn { min-height: 2.6rem; }
+}
+
+/* ---------------------------------------------------------------- drawers and forms */
+
+/* Closed drawers sit off to the right; hide them so their glow doesn't
+   show as a band down the edge of the page (and they can't be tabbed into). */
+.settings-drawer:not(.open) {
+  visibility: hidden;
+  box-shadow: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.3s;
+}
+.settings-drawer {
+  background: rgba(8, 3, 18, 0.97);
+  border-left: 1px solid rgba(255, 43, 214, 0.45);
+  box-shadow: -2px 0 0 rgba(34, 228, 255, 0.25), -20px 0 60px rgba(255, 43, 214, 0.15), -10px 0 40px rgba(0, 0, 0, 0.7);
+}
+.drawer-title-area h3 {
+  font-family: var(--font-sign);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.settings-form h4 {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(34, 228, 255, 0.6);
+  letter-spacing: 0.14em;
+  border-bottom: 1px solid rgba(34, 228, 255, 0.2);
+}
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="time"],
+select,
+.file-editor {
+  background: rgba(5, 2, 12, 0.75);
+  border-color: rgba(139, 92, 255, 0.3);
+}
+input:focus,
+select:focus,
+.file-editor:focus {
+  border-color: var(--neon-pink) !important;
+  box-shadow: 0 0 0 1px var(--neon-pink), 0 0 16px rgba(255, 43, 214, 0.35) !important;
+}
+.slider { background-color: rgba(139, 92, 255, 0.25); }
+input:checked + .slider { background: var(--primary-gradient); box-shadow: 0 0 12px rgba(255, 43, 214, 0.6); }
+
+/* consoles look like a CRT */
+.console-wrapper,
+.logs-drawer .console-wrapper,
+.file-editor {
+  color: #c9f8ff;
+}
+.logs-drawer .console-wrapper,
+.check-output {
+  background: radial-gradient(ellipse at center, rgba(34, 228, 255, 0.05), transparent 70%), #04020a;
+  border-color: rgba(34, 228, 255, 0.3);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 0 4px rgba(34, 228, 255, 0.35);
+}
+
+.toast { background: #0d0618; border-color: rgba(139, 92, 255, 0.35); box-shadow: 0 0 24px rgba(139, 92, 255, 0.25); }
+.app-confirm-card { background: #0d0618 !important; border: 1px solid rgba(255, 43, 214, 0.45) !important; box-shadow: 0 0 40px rgba(255, 43, 214, 0.2) !important; }
+
+/* ---------------------------------------------------------------- footer */
+
+.app-footer { border-top: 1px solid rgba(139, 92, 255, 0.25); }
+.app-footer::before {
+  content: 'Be kind, rewind.';
+  font-family: var(--font-script);
+  font-size: 1.6rem;
+  color: var(--horror-red);
+  text-shadow: 0 0 8px rgba(255, 46, 59, 0.6);
+  order: 2;
+}
+
+/* ---------------------------------------------------------------- sign-in page */
+
+.login-card {
+  background: rgba(10, 4, 22, 0.92) !important;
+  border: 1px solid rgba(255, 43, 214, 0.45) !important;
+  box-shadow: 0 0 40px rgba(255, 43, 214, 0.2), 0 20px 60px rgba(0, 0, 0, 0.7) !important;
+  position: relative;
+}
+.login-header h2.brand-title { justify-content: center; }
+.login-header p { color: var(--text-muted) !important; }
+.input-wrapper input { background: rgba(5, 2, 12, 0.85) !important; border-color: rgba(139, 92, 255, 0.35) !important; }
+
+@media (max-width: 600px) {
+  .brand-chrome { font-size: 1.6rem; }
+  .brand-script { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary:hover:not(:disabled) { transform: none; }
+}
+
+/* ---------------------------------------------------------------- the last native controls */
+
+/* Checkboxes: a dark neon box that lights up pink when ticked, to match the Admin Mode switch.
+   The switch's own hidden checkbox is left alone. */
+input[type="checkbox"]:not(.toggle-switch input),
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 1.1rem !important;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  display: inline-grid;
+  place-content: center;
+  border: 1px solid rgba(139, 92, 255, 0.6);
+  border-radius: 0.25rem;
+  background: rgba(5, 2, 12, 0.85);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+input[type="radio"] { border-radius: 50%; }
+input[type="checkbox"]:not(.toggle-switch input)::before {
+  content: '';
+  width: 0.62rem;
+  height: 0.62rem;
+  transform: scale(0);
+  transition: transform 0.12s ease-out;
+  background: #fff;
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 22%, 86% 8%, 39% 70%);
+}
+input[type="radio"]::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.12s ease-out;
+  background: #fff;
+}
+input[type="checkbox"]:not(.toggle-switch input):checked,
+input[type="radio"]:checked {
+  border-color: var(--neon-pink);
+  background: var(--primary-gradient);
+  box-shadow: 0 0 10px rgba(255, 43, 214, 0.55);
+}
+input[type="checkbox"]:not(.toggle-switch input):checked::before,
+input[type="radio"]:checked::before { transform: scale(1); }
+input[type="checkbox"]:not(.toggle-switch input):hover:not(:disabled),
+input[type="radio"]:hover:not(:disabled) { border-color: var(--neon-pink); }
+input[type="checkbox"]:not(.toggle-switch input):focus-visible,
+input[type="radio"]:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+input[type="checkbox"]:disabled, input[type="radio"]:disabled { opacity: 0.45; cursor: default; }
+
+/* Every dropdown field gets the same chevron and dark fill, not the browser's own control
+   (the Server type field in Settings was the last one still drawn by the browser). */
+select:not([multiple]):not([size]) {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.2rem;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='none' stroke='%2322e4ff' stroke-width='1.8' d='M1 1.5l5 5 5-5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 0.7rem auto;
+  cursor: pointer;
+}
+#header-mode-selector { background-position: right 0.4rem center; padding-right: 1.6rem; }
+
+/* a button whose work is under way (Download Config): spinner icon, live label, no second click */
+.btn.busy { cursor: progress; opacity: 0.85; font-variant-numeric: tabular-nums; }

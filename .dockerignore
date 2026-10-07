@@ -1,0 +1,24 @@
+*
+!scripts/
+!web/
+!docker/
+!config/
+!LICENSE
+!THIRD_PARTY_NOTICES.md
+**/__pycache__/
+# never bake real settings, lists, state or the UI's files into the image; only the examples
+config/staffpicked.env
+config/collections.toml
+config/playlists.toml
+config/genres.toml
+config/watchlists/
+config/collections/*
+!config/collections/example-list.md
+config/playlists/*
+!config/playlists/example-list.md
+config/cache/
+config/images/
+config/backups/
+config/web/
+
+.env

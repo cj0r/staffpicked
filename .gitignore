@@ -1,0 +1,27 @@
+# Your real settings, lists and everything StaffPicked writes at run time live in config/.
+# Only the examples, the example lists and the list template are tracked.
+config/*
+!config/*.example
+!config/list-template.md
+!config/collections/
+config/collections/*
+!config/collections/example-list.md
+!config/playlists/
+config/playlists/*
+!config/playlists/example-list.md
+
+# compose variables (CONFIG_PATH)
+/.env
+
+# notes kept next to the app, not part of it
+reference/
+
+# Python, editors, OS
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

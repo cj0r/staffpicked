@@ -1,0 +1,23 @@
+# StaffPicked: docker compose up -d, then open http://<host>:9343 and finish the
+# settings in the browser. Your settings live in ./config next to this file.
+services:
+  staffpicked:
+    image: cj0r/staffpicked:latest   # or ghcr.io/cj0r/staffpicked:latest
+    container_name: staffpicked
+    restart: unless-stopped
+    ports:
+      - "9343:9343"              # web UI; behind a reverse proxy on this host, "127.0.0.1:9343:9343"
+    security_opt:
+      - no-new-privileges:true   # nothing in the container can gain privileges after start
+    environment:
+      - TZ=Etc/UTC               # your time zone (e.g. America/Chicago), used for the sync schedule; Settings > Time zone overrides it
+      # optional: StaffPicked runs as whoever owns the config folder. To pick the user
+      # and group yourself, set both (see "Permissions" in the README):
+      # - PUID=1000
+      # - PGID=1000
+    volumes:
+      # your config folder; a relative path is read from the folder this file is in.
+      # To keep it elsewhere, set CONFIG_PATH in a .env file next to this one.
+      - ${CONFIG_PATH:-./config}:/config
+      # optional: a folder of your own artwork, so posters can point at /artwork/<file>.jpg
+      # - /path/to/artwork:/artwork:ro
