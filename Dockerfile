@@ -1,7 +1,7 @@
 # StaffPicked: Emby and Jellyfin collections and playlists from MDBList, Trakt and your own lists.
 # Everything you edit lives in the /config volume; the image holds only the app.
 # Pinned to one Alpine release so a rebuild doesn't change the base under us; Dependabot bumps it.
-FROM python:3.13-alpine3.24
+FROM python:3.14-alpine3.24
 
 # the release build passes the tag's version (it must match scripts/__init__.py) and commit
 ARG VERSION=dev
