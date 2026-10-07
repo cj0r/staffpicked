@@ -359,6 +359,28 @@ $('admin-mode-toggle').addEventListener('change', (e) => {
   if (status) renderJobPanel();   // the Sync button's label follows Dry run
 });
 
+// ---------------------------------------------------------------- screen effects
+
+// The worn-tape effects (tracking band, grain, scanlines, vignette, blinking PLAY). Enabled
+// unless disabled in Settings; saved on the server, which marks the page before it draws.
+function setEffects(on) {
+  document.documentElement.classList.toggle('no-effects', !on);
+  $('effects-toggle').checked = on;
+  $('effects-label').textContent = on ? 'Enabled: the full worn-tape look' : 'Disabled: a calmer, cleaner screen';
+}
+
+setEffects(!document.documentElement.classList.contains('no-effects'));
+$('effects-toggle').addEventListener('change', async (e) => {
+  const on = e.target.checked;
+  setEffects(on);
+  try {
+    await api('effects', { method: 'POST', body: { effects: on } });
+  } catch (err) {
+    setEffects(!on);
+    showToast(`Couldn't save Screen Effects: ${err.message}`, 'error');
+  }
+});
+
 // ---------------------------------------------------------------- state & dashboard
 
 let status = null;
@@ -1453,6 +1475,7 @@ function connectEvents() {
   });
   es.addEventListener('settings', () => { refresh(); refreshEmby(); });
   es.addEventListener('files', () => refresh());
+  es.addEventListener('effects', (e) => setEffects(JSON.parse(e.data).effects !== false));
   es.addEventListener('progress', (e) => {
     const d = JSON.parse(e.data);
     progressHandlers[d.task]?.(d);

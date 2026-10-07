@@ -122,6 +122,10 @@ default, on port 9343.
   Artwork, Live Logs, the Dry run checkbox and every delete and remove button.
   Disabled hides them for a cleaner screen; it changes nothing on its own and is
   remembered per browser.
+- **Screen Effects** (Settings, under Admin Mode): enabled at first. Disable it to
+  drop the worn-tape effects (the tracking band that rolls down the screen, tape
+  grain, scanlines, the tube vignette and the blinking PLAY); colors, signage and
+  layout stay. Saved in `web.json`, so it holds for every browser, sign-in and restart.
 - **Settings**: staffpicked.env (a card per media server with its admin user and
   playlist viewers, Add Server, Test and Remove; MDBList, Trakt, TMDB and fanart.tv keys, the schedule (set times each day, or every N hours or minutes)
   and time zone (a list of zones to pick from; the dashboard shows the next run in it), the
@@ -172,7 +176,7 @@ python3 web/server.py      # uses $STAFFPICKED_CONFIG, else /config, else ./conf
 | `images/` | Posters, thumbs and backdrops the configs point at, plus saved copies of downloaded ones (replaced copies go to `images/archive/`). |
 | `cache/` | StaffPicked's state: uploaded images (`state.json`), renames waiting for a sync (`renames.json`), what each list's last sync found (`results-collection.json` and so on), and the MDBList scores the list window shows (`mdblist-scores.json`, each looked up at most once a week). |
 | `backups/` | The last 10 versions of each config and list file, from before each save. |
-| `web/` | The UI's own files: password hash and sign-ins (`web.json`, hashed), run history and full job logs (`logs/runs/` keeps each recent run's own log and what it changed). |
+| `web/` | The UI's own files: password hash, sign-ins and the Screen Effects choice (`web.json`, hashed), run history and full job logs (`logs/runs/` keeps each recent run's own log and what it changed). |
 
 ## Stack
 
@@ -206,7 +210,7 @@ POST/PUT bodies are JSON and must be sent as `application/json`.
 
 | Method | Path | What |
 | :--- | :--- | :--- |
-| GET | `/api/status` | Version, mode, sync time, `time_zone`, next run, `setup` ({needed, skipped}: whether no media server is set up yet, and whether the setup screen was put off), `requests` ({service: seerr\|arr, movies, shows}: whether films and shows can be requested), the media servers [{id, name, type}], and per job: state, last run (with `server`, `servers`: each server's result, `summary`, and `progress`), items (with the `servers` each is limited to, `poster`, and `last`: what its last sync found, including `held`). |
+| GET | `/api/status` | Version, mode, sync time, `time_zone`, next run, `setup` ({needed, skipped}: whether no media server is set up yet, and whether the setup screen was put off), `effects` (whether Screen Effects are enabled), `requests` ({service: seerr\|arr, movies, shows}: whether films and shows can be requested), the media servers [{id, name, type}], and per job: state, last run (with `server`, `servers`: each server's result, `summary`, and `progress`), items (with the `servers` each is limited to, `poster`, and `last`: what its last sync found, including `held`). |
 | GET | `/api/events` | Server-Sent Events: `log` {job, line}, `status` (a job), `settings`, `files`, `progress` {task, ...} (for a sync: {job, done, total, current}). |
 | GET | `/api/health` | {ok, version, scheduler_seconds_ago}; 503 when the scheduler has stopped. No sign-in needed; Docker's HEALTHCHECK calls it. |
 | POST | `/api/jobs/{job}/run` | {action: sync, check or remove, dry_run, only, server, allow_removals}. `server` (a name) runs on that server only; blank = every server. `allow_removals` lets a sync past the removal limit (Sync Anyway). |
@@ -219,6 +223,7 @@ POST/PUT bodies are JSON and must be sent as `application/json`.
 | POST | `/api/requests/test` | {service: seerr\|radarr\|sonarr, env?: {SEERR_...}}: check that service with these settings over the saved ones. Seerr: {version, user}. Radarr and Sonarr: {version, profiles, folders, profile, folder, problem}; Settings uses the profiles and folders as its choices. |
 | POST | `/api/requests/status` | {items: [{imdb, show}]}: {states: {imdb: requested\|available\|missing}, errors: {service: message}} from the chosen service. Answers are kept for two minutes. |
 | POST | `/api/requests/add` | {imdb: ID, show}: request that one title: {result: added\|already\|failed, name, state, error, service}. |
+| POST | `/api/effects` | {effects: true\|false}: enable or disable Screen Effects for everyone; open pages follow along. |
 | POST | `/api/setup/test` | {server: {type, url, key}}: try a server: {ok, server, version, error}. |
 | POST | `/api/setup` | {server: {type, url, key}, keys?: {MDBLIST_API_KEY, TRAKT_CLIENT_ID}, password?}: the setup screen's Finish. Tests the server, saves it as server 1, sets the password if one is given and none is set (and signs this browser in), then starts the first sync. |
 | POST | `/api/setup/skip` | Don't open the setup screen again on its own. |

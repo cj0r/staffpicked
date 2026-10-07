@@ -1,0 +1,74 @@
+name: Dev image
+
+# A test image for trying changes on your own server before they're released.
+# Every push to main here builds cj0r/staffpicked:dev (and :dev-<commit>) for amd64 and arm64.
+# "Run workflow" on the Actions tab builds it from any branch, to try a change before merging.
+# The web UI shows which build it is: v1.0.0-dev+a1b2c3d.
+#
+# Needs the same DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets as the public repo.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-image
+  cancel-in-progress: true
+
+env:
+  IMAGE: cj0r/staffpicked
+
+jobs:
+  image:
+    if: github.repository == 'cj0r/staffpicked-dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Tests
+        run: python -m unittest discover -s tests -t .
+      - name: Short commit
+        id: c
+        run: echo "sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build the amd64 image to test
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: staffpicked:test
+          build-args: BUILD=${{ steps.c.outputs.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test it before anything is pushed
+        run: |
+          docker run -d --name sp -p 9343:9343 staffpicked:test
+          for i in $(seq 30); do curl -fs http://127.0.0.1:9343/api/health && exit 0; sleep 2; done
+          docker logs sp; exit 1
+      - name: Build amd64 + arm64 and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:dev
+            ${{ env.IMAGE }}:dev-${{ steps.c.outputs.sha }}
+          build-args: |
+            VERSION=dev-${{ steps.c.outputs.sha }}
+            REVISION=${{ github.sha }}
+            BUILD=${{ steps.c.outputs.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - run: echo "Pushed ${IMAGE}:dev and ${IMAGE}:dev-${{ steps.c.outputs.sha }} (shows as v$(python -c 'import scripts; print(scripts.__version__)')-dev+${{ steps.c.outputs.sha }})" >> "$GITHUB_STEP_SUMMARY"

@@ -148,6 +148,26 @@ html::after {
   html::after { display: none; }
 }
 
+/* Screen Effects disabled in Settings: no tape grain, tracking band, scanlines, tube
+   vignette or blinking PLAY. The neon, the grid floor and the signage stay. */
+html.no-effects::before,
+html.no-effects::after,
+html.no-effects body::after { display: none !important; }
+html.no-effects body,
+html.no-effects body[style] {
+  background-image:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(139, 92, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 43, 214, 0.18), transparent 70%) !important;
+}
+html.no-effects .brand-title,
+html.no-effects .card-header h3,
+html.no-effects .status-header h3,
+html.no-effects .drawer-title-area h3 {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+html.no-effects .osd-play { animation: none !important; }
+
 /* ---------------------------------------------------------------- signage */
 
 .brand-title {
