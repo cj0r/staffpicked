@@ -2,6 +2,12 @@
 
 Every release of StaffPicked, newest first. Versions follow [semantic versioning](https://semver.org): a new major version means a config or setting has to change by hand.
 
+## 1.1.3 (2026-11-05)
+
+- The badges at the top of the README did not always load on GitHub, whose image proxy gives up after a few seconds on a slow badge. The test badge now comes from GitHub itself, the version badge uses the lighter form, and the others are cached for a day.
+- The Docker image is built on Python 3.15 (Alpine 3.24) instead of 3.14. Nothing in StaffPicked changes.
+- The release build uses newer versions of the Docker build and Docker Hub overview actions.
+
 ## 1.1.2 (2026-10-07)
 
 - The README says StaffPicked is developed with the help of AI coding tools.

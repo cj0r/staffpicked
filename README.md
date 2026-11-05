@@ -1,9 +1,9 @@
 <h1 align="center"><img src="docs/logo/banner.webp" alt="StaffPicked" width="100%"></h1>
 
 <p align="center">
-  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/v/cj0r/staffpicked?sort=semver&style=flat-square&label=docker" alt="Docker image version"></a>
-  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/pulls/cj0r/staffpicked?style=flat-square" alt="Docker pulls"></a>
-  <a href="https://github.com/cj0r/staffpicked/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/cj0r/staffpicked/tests.yml?branch=main&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/v/cj0r/staffpicked/latest?style=flat-square&label=docker&cacheSeconds=86400" alt="Docker image version"></a>
+  <a href="https://hub.docker.com/r/cj0r/staffpicked"><img src="https://img.shields.io/docker/pulls/cj0r/staffpicked?style=flat-square&cacheSeconds=86400" alt="Docker pulls"></a>
+  <a href="https://github.com/cj0r/staffpicked/actions/workflows/tests.yml"><img src="https://github.com/cj0r/staffpicked/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square" alt="License: GPL-3.0"></a>
 </p>
 
