@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # 3.11 is the oldest StaffPicked runs on (tomllib); 3.13 is what the image uses
-        python: ["3.11", "3.13"]
+        # 3.11 is the oldest StaffPicked runs on (tomllib); 3.15 is what the image uses
+        python: ["3.11", "3.13", "3.15"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

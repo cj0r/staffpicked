@@ -4,7 +4,8 @@ StaffPicked is licensed under the GNU General Public License v3.0 (see `LICENSE`
 
 | What | Where | License |
 | --- | --- | --- |
-| [Lucide](https://lucide.dev) icons v0.469.0 | `web/public/vendor/lucide.min.js` | ISC |
+| [Lucide](https://lucide.dev) icons v1.72.0 | `web/public/vendor/lucide.min.js` | ISC |
+| [Octicons](https://primer.style/octicons/) GitHub mark by GitHub | inline SVG in `web/public/index.html` | MIT |
 | [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) by Kazuhiko Arase | `web/public/vendor/qrcode.js` | MIT |
 | [Bungee](https://fonts.google.com/specimen/Bungee) by David Jonathan Ross | `web/public/vendor/fonts/bungee-400.woff2` | SIL Open Font License 1.1 |
 | [JetBrains Mono](https://www.jetbrains.com/lp/mono/) by JetBrains | `web/public/vendor/fonts/jetbrains-mono-400.woff2` | SIL Open Font License 1.1 |

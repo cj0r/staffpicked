@@ -2284,8 +2284,11 @@ input:checked + .slider:before {
   transition: var(--transition);
 }
 
-.footer-left .footer-link i[data-lucide="github"] {
-  color: var(--text-muted);
+.footer-left .footer-link .brand-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: var(--text-muted);
+  transition: var(--transition);
 }
 
 .footer-left .footer-link:hover {
@@ -2294,8 +2297,8 @@ input:checked + .slider:before {
   color: var(--primary);
 }
 
-.footer-left .footer-link:hover i[data-lucide="github"] {
-  color: var(--primary);
+.footer-left .footer-link:hover .brand-icon {
+  fill: var(--primary);
   transform: translateY(-1px);
 }
 
@@ -2319,7 +2322,8 @@ input:checked + .slider:before {
   font-size: 0.8rem;
 }
 
-.footer-right .support-link i {
+.footer-right .support-link i,
+.footer-right .support-link svg {
   width: 0.85rem;
   height: 0.85rem;
   transition: var(--transition);
@@ -2331,7 +2335,8 @@ input:checked + .slider:before {
   color: #ffdd00;
 }
 
-.footer-right .support-link.bmac i {
+.footer-right .support-link.bmac i,
+.footer-right .support-link.bmac svg {
   color: #ffdd00;
 }
 
@@ -2341,7 +2346,8 @@ input:checked + .slider:before {
   color: #f16061;
 }
 
-.footer-right .support-link.kofi i {
+.footer-right .support-link.kofi i,
+.footer-right .support-link.kofi svg {
   color: #f16061;
 }
 

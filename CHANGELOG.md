@@ -2,6 +2,12 @@
 
 Every release of StaffPicked, newest first. Versions follow [semantic versioning](https://semver.org): a new major version means a config or setting has to change by hand.
 
+## 1.1.4 (2026-11-12)
+
+- Updated the bundled Lucide icon library from 0.469.0 to 1.72.0. The GitHub icon in the footer is now an inline SVG, because Lucide no longer includes brand icons.
+- The footer shows the Buy Me A Coffee and Ko-fi links.
+- The tests also run on Python 3.15, the version the image uses.
+
 ## 1.1.3 (2026-11-05)
 
 - The badges at the top of the README did not always load on GitHub, whose image proxy gives up after a few seconds on a slow badge. The test badge now comes from GitHub itself, the version badge uses the lighter form, and the others are cached for a day.
